@@ -1,1 +1,5 @@
+#1 open xampp
+#2 start all
+#3 open browser
+
 localhost/src/index.html
