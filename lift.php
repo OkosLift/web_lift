@@ -11,14 +11,13 @@ canvas {
 </style>
 </head>
 <body onload="startLift()">
-<?php
-$emelet_num = $_POST["emelet_num"];
-$lift_num = $_POST["lift_num"];
-?>
+
+<canvas id="canvas"></canvas>
+
 <script>
 
-var emeletszam = <?php echo $emelet_num; ?>;
-var liftszam = <?php echo $lift_num; ?>;
+var emeletszam = 4;
+var liftszam = 1;
 
 var padlo = 10;
 var szint = 50;
@@ -27,7 +26,14 @@ var lift = [];
 var floor = [];
 
 var kovi = szint + padlo;
-var szeles = (szint + 20) * <?php echo $lift_num; ?>;
+var szeles = (szint + 20) * liftszam;
+
+var button1;
+var button2;
+var button3;
+var button4;
+
+
 
 function startLift() {
     for(let i = 0; i<liftszam; i++){
@@ -39,13 +45,18 @@ function startLift() {
 		szint = szint + kovi;
 	}
 	
+	button1 = new component(40,40,"lime",95,10);
+	button2 = new component(40,40,"lime",95,70);
+	button3 = new component(40,40,"lime",95,130);
+	button4 = new component(40,40,"lime",95,190);
+	
     liftAkna.start();
 }
 
 var liftAkna = {
-    canvas : document.createElement("canvas"),
+    canvas : document.getElementById("canvas"),
     start : function() {
-        this.canvas.width = szeles;
+        this.canvas.width = szeles+100;
         this.canvas.height = emeletszam*kovi;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
@@ -56,7 +67,13 @@ var liftAkna = {
 		for(let i=0; i<liftszam; i++){
 			lift[i].update();
 	    }
+		button1.update();
+		button2.update();
+		button3.update();
+		button4.update();
+	
     },
+
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
@@ -92,6 +109,26 @@ function updateLiftAkna() {
 	for(let i=0; i<emeletszam; i++){
 		floor[i].update();
 	}
+	button1.update();
+	button2.update();
+	button3.update();
+	button4.update();
+	
+	this.canvas.addEventListener('click', function(evt) {
+		var mousePos = getMousePos(this.canvas, evt);
+		if (isInsideButton(mousePos, button1)) {
+			alert("1");
+		}
+		if (isInsideButton(mousePos, button2)) {
+			alert("2");
+		}
+		if (isInsideButton(mousePos, button3)) {
+			alert("3");
+		}
+		if (isInsideButton(mousePos, button4)) {
+			alert("4");
+		}
+	});
 }
 
 function moveup() {
@@ -106,7 +143,47 @@ function movedown() {
 		lift[i].y += kovi;
 		//lift[i].speedY += 1;
 	}
+		
 }
+
+
+// Ezt skubizzad Lehi
+
+function isInsideButton(pos, rect){
+			return pos.x > rect.x && pos.x < rect.x+rect.width &&
+				   pos.y > rect.y && pos.y < rect.y+rect.height
+}
+	
+function getMousePos(canvas, event) {
+		var rect = canvas.getBoundingClientRect();
+		return {
+			x: event.clientX - rect.left,
+			y: event.clientY - rect.top
+		};
+}
+
+//Ez kell majd neked, alertek helyett függvényeket hívogatni
+
+canvas.addEventListener('click', function(evt) {
+	var mousePos = getMousePos(canvas, evt);
+	if (isInsideButton(mousePos, button1)) {
+		alert("1");
+	}
+	if (isInsideButton(mousePos, button2)) {
+		alert("2");
+	}
+	if (isInsideButton(mousePos, button3)) {
+		alert("3");
+	}
+	if (isInsideButton(mousePos, button4)) {
+		alert("4");
+	}
+});
+
+
+
+
+
 </script>
 <div style="text-align:center;width:400px;">
   <button onclick="moveup()">FEL</button><br><br>
