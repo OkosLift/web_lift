@@ -150,16 +150,16 @@ function getMousePos(canvas, event) {
 canvas.addEventListener('click', function(evt) {
 	var mousePos = getMousePos(canvas, evt);
 	if (isInsideButton(mousePos, button1)) {
-		alert("1");
+		calculateMove();
 	}
 	if (isInsideButton(mousePos, button2)) {
-		alert("2");
+		calculateMove();
 	}
 	if (isInsideButton(mousePos, button3)) {
-		alert("3");
+		calculateMove();
 	}
 	if (isInsideButton(mousePos, button4)) {
-		alert("4");
+		calculateMove();
 	}
 });
 
