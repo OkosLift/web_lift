@@ -21,10 +21,16 @@
             var emeletszam = <?php echo $emelet_num; ?>;
             var liftszam = <?php echo $lift_num; ?>;
         </script>
-        
-        <script type='text/javascript' src = 'lift.js'>
-            //include-oljuk a js file-t amiben már a globális változók elérhetőek
+
+        <script>
+            //<script type='text/javascript' src = 'lib1.js'>
+            //<script type='text/javascript' src = 'lib2.js'>
+            //<script type='text/javascript' src = 'lib3.js'>
+            //így kell includeolni annyi js fájlt amennyit akarok
         </script>
+
+        <script type='text/javascript' src = 'liftMove.js'></script>
+        <script type='text/javascript' src = 'lift.js'></script> 
         <div style="text-align:center;width:400px;">
             <button onclick="moveTo6()">6. Emeletre</button><br><br>
             <button onclick="moveTo5()">5. Emeletre</button><br><br>

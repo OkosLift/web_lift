@@ -94,24 +94,9 @@ function movedown() {
     console.log(currentLevel);
 }
 
+/////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-function getLift(i){
-    if (i >= liftszam)
-        i = liftszam-1;
-    else if (i < 0)
-        i = 0;
-
-    return lift[i]; 
-}
-
+//kiválasztás gombok
 var selectedLift = 0;
 
 function selectLift0(){
@@ -134,99 +119,46 @@ function selectLift3(){
     console.log("Selected lift: " +getSelectedLift());
 }
 
-function getSelectedLift(){
-    return selectedLift;
-}
 
-
-
-
-var currentLevel = [0, 0, 0, 0];
-
-function getCurrentLevel(){
-    return currentLevel[getSelectedLift()];
-}
-
-function moveThatLift_UP(i){
-    getLift[i];
-
-    lift[i].y -= kovi;
-
-    currentLevel[getSelectedLift()]++;
-    console.log(getCurrentLevel());
-}
-
-function moveThatLift_DOWN(i){
-    getLift[i];
-
-    lift[i].y += kovi;
-
-    currentLevel[getSelectedLift()]--;
-    console.log(getCurrentLevel());
-}
-
-
-
-
-
-
-function delay(milliseconds){
-    return new Promise(resolve => {
-        setTimeout(resolve, milliseconds);
-    });
-}
-
-async function moveHelp(level){
-    while (getCurrentLevel() != level){
-        await delay(400);
-        if (getCurrentLevel() < level){
-            //felfele megy
-            moveThatLift_UP(selectedLift);
-        } else if (getCurrentLevel() > level){
-            //lefele megy
-            moveThatLift_DOWN(selectedLift);
-        }
-    }
-}
-
+// parancs gombok
 async function moveTo0(){
 
     const level = 0;
-    moveHelp(level);
+    calculateMove(level);
 }
 
 async function moveTo1(){
 
     const level = 1;
-    moveHelp(level);
+    calculateMove(level);
 }
 
 async function moveTo2(){
 
     const level = 2;
-    moveHelp(level);
+    calculateMove(level);
 }
 
 async function moveTo3(){
 
     const level = 3;
-    moveHelp(level);
+    calculateMove(level);
 }
 
 async function moveTo4(){
 
     const level = 4;
-    moveHelp(level);
+    calculateMove(level);
 }
 
 async function moveTo5(){
 
     const level = 5;
-    moveHelp(level);
+    calculateMove(level);
 }
 
 async function moveTo6(){
 
     const level = 6;
-    moveHelp(level);
+    calculateMove(level);
 }
