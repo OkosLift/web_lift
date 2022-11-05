@@ -73,11 +73,14 @@ function updateLiftAkna() {
 	}
 }
 
+var currentLevel = 0;
+
 function moveup() {
     for(let i=0; i<liftszam; i++){
 		lift[i].y -= kovi;
 		//lift[i].speedY -= 1;
 	}
+    currentLevel++;
 }
 
 function movedown() {
@@ -85,4 +88,109 @@ function movedown() {
 		lift[i].y += kovi;
 		//lift[i].speedY += 1;
 	}
+    currentLevel--;
+}
+
+function moveTo0(){
+
+    const level = 0;
+    
+    while (currentLevel != level){
+        if (currentLevel <= level){
+            //felfele megy
+        } else{
+            //lefele megy
+            movedown();
+        }
+    }
+}
+
+function moveTo1(){
+
+    const level = 1;
+
+    while (currentLevel != level){
+        if (currentLevel < level){
+            //felfele megy
+            moveup();
+        } else if (currentLevel > level){
+            //lefele megy
+            movedown();
+        }
+    }
+}
+
+function moveTo2(){
+
+    const level = 2;
+
+    while (currentLevel != level){
+        if (currentLevel < level){
+            //felfele megy
+            moveup();
+        } else if (currentLevel > level){
+            //lefele megy
+            movedown();
+        }
+    
+}
+
+function moveTo3(){
+
+    const level = 1;
+
+    while (currentLevel != level){
+        if (currentLevel < level){
+            //felfele megy
+            moveup();
+        } else if (currentLevel > level){
+            //lefele megy
+            movedown();
+        }
+    }
+}
+
+function moveTo4(){
+
+    const level = 1;
+
+    while (currentLevel != level){
+        if (currentLevel < level){
+            //felfele megy
+            moveup();
+        } else if (currentLevel > level){
+            //lefele megy
+            movedown();
+        }
+    }
+}
+
+function moveTo5(){
+
+    const level = 1;
+
+    while (currentLevel != level){
+        if (currentLevel < level){
+            //felfele megy
+            moveup();
+        } else if (currentLevel > level){
+            //lefele megy
+            movedown();
+        }
+    }
+}
+
+function moveTo6(){
+
+    const level = 1;
+
+    while (currentLevel != level){
+        if (currentLevel < level){
+            //felfele megy
+            moveup();
+        } else if (currentLevel > level){
+            //lefele megy
+            movedown();
+        }
+    }
 }

@@ -28,6 +28,15 @@
         <div style="text-align:center;width:400px;">
             <button onclick="moveup()">FEL</button><br><br>
             <button onclick="movedown()">LE</button>
+            
+            <button onclick="moveTo0()">0. Emeletre</button><br><br>
+            <button onclick="moveTo1()">1. Emeletre</button><br><br>
+            <button onclick="moveTo2()">2. Emeletre</button><br><br>
+            <button onclick="moveTo3()">3. Emeletre</button><br><br>
+            <button onclick="moveTo4()">4. Emeletre</button><br><br>
+            <button onclick="moveTo5()">5. Emeletre</button><br><br>
+            <button onclick="moveTo6()">6. Emeletre</button><br><br>
+
         </div>
     </body>
 </html>
