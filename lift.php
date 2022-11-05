@@ -26,13 +26,18 @@
             //include-oljuk a js file-t amiben már a globális változók elérhetőek
         </script>
         <div style="text-align:center;width:400px;">
-            <button onclick="moveTo0()">0. Emeletre</button><br><br>
-            <button onclick="moveTo1()">1. Emeletre</button><br><br>
-            <button onclick="moveTo2()">2. Emeletre</button><br><br>
-            <button onclick="moveTo3()">3. Emeletre</button><br><br>
-            <button onclick="moveTo4()">4. Emeletre</button><br><br>
-            <button onclick="moveTo5()">5. Emeletre</button><br><br>
             <button onclick="moveTo6()">6. Emeletre</button><br><br>
+            <button onclick="moveTo5()">5. Emeletre</button><br><br>
+            <button onclick="moveTo4()">4. Emeletre</button><br><br>
+            <button onclick="moveTo3()">3. Emeletre</button><br><br>
+            <button onclick="moveTo2()">2. Emeletre</button><br><br>
+            <button onclick="moveTo1()">1. Emeletre</button><br><br>
+            <button onclick="moveTo0()">0. Emeletre</button><br><br>
+
+            <button onclick="selectLift0()">Select 0. lift</button>
+            <button onclick="selectLift1()">Select 1. lift</button>
+            <button onclick="selectLift2()">Select 2. lift</button>
+            <button onclick="selectLift3()">Select 3. lift</button>
 
         </div>
     </body>

@@ -73,14 +73,15 @@ function updateLiftAkna() {
 	}
 }
 
-var currentLevel = 0;
+
+
 
 function moveup() {
     for(let i=0; i<liftszam; i++){
 		lift[i].y -= kovi;
 		//lift[i].speedY -= 1;
 	}
-    currentLevel++;
+    //currentLevel++;
     console.log(currentLevel);
 }
 
@@ -89,11 +90,80 @@ function movedown() {
 		lift[i].y += kovi;
 		//lift[i].speedY += 1;
 	}
-    currentLevel--;
+    //currentLevel--;
     console.log(currentLevel);
 }
 
 
+
+
+
+
+
+
+
+
+function getLift(i){
+    if (i >= liftszam)
+        i = liftszam-1;
+    else if (i < 0)
+        i = 0;
+
+    return lift[i]; 
+}
+
+var selectedLift = 0;
+
+function selectLift0(){
+    selectedLift = 0;
+    console.log("Selected lift: " +getSelectedLift());
+}
+
+function selectLift1(){
+    selectedLift = 1;
+    console.log("Selected lift: " +getSelectedLift());
+}
+
+function selectLift2(){
+    selectedLift = 2;
+    console.log("Selected lift: " +getSelectedLift());
+}
+
+function selectLift3(){
+    selectedLift = 3;
+    console.log("Selected lift: " +getSelectedLift());
+}
+
+function getSelectedLift(){
+    return selectedLift;
+}
+
+
+
+
+var currentLevel = [0, 0, 0, 0];
+
+function getCurrentLevel(){
+    return currentLevel[getSelectedLift()];
+}
+
+function moveThatLift_UP(i){
+    getLift[i];
+
+    lift[i].y -= kovi;
+
+    currentLevel[getSelectedLift()]++;
+    console.log(getCurrentLevel());
+}
+
+function moveThatLift_DOWN(i){
+    getLift[i];
+
+    lift[i].y += kovi;
+
+    currentLevel[getSelectedLift()]--;
+    console.log(getCurrentLevel());
+}
 
 
 
@@ -107,14 +177,14 @@ function delay(milliseconds){
 }
 
 async function moveHelp(level){
-    while (currentLevel != level){
+    while (getCurrentLevel() != level){
         await delay(400);
-        if (currentLevel < level){
+        if (getCurrentLevel() < level){
             //felfele megy
-            moveup();
-        } else if (currentLevel > level){
+            moveThatLift_UP(selectedLift);
+        } else if (getCurrentLevel() > level){
             //lefele megy
-            movedown();
+            moveThatLift_DOWN(selectedLift);
         }
     }
 }
