@@ -45,10 +45,10 @@ async function calculateMove(level){
         await delay(200);
         if (getCurrentLevel() < level){
             //felfele megy
-            moveThatLift_UP(selectedLift);
+            moveThatLift_UP(getSelectedLift());
         } else if (getCurrentLevel() > level){
             //lefele megy
-            moveThatLift_DOWN(selectedLift);
+            moveThatLift_DOWN(getSelectedLift());
         }
     }
 }
@@ -59,5 +59,9 @@ function delay(milliseconds){
     return new Promise(resolve => {
         setTimeout(resolve, milliseconds);
     });
+}
+
+function liftCall(level,upOrDown){
+    console.log("lift hívás: " + level + " " + upOrDown);
 }
 

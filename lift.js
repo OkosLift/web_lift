@@ -75,7 +75,7 @@ function updateLiftAkna() {
 
 
 
-
+/*
 function moveup() {
     for(let i=0; i<liftszam; i++){
 		lift[i].y -= kovi;
@@ -93,7 +93,7 @@ function movedown() {
     //currentLevel--;
     console.log(currentLevel);
 }
-
+*/
 /////////////////////////////////////////////
 
 //kiválasztás gombok
@@ -145,20 +145,36 @@ async function moveTo3(){
     calculateMove(level);
 }
 
-async function moveTo4(){
+//hivás gombok
 
-    const level = 4;
-    calculateMove(level);
+function callLift0Up(){
+    liftCall(0,"up");
 }
 
-async function moveTo5(){
-
-    const level = 5;
-    calculateMove(level);
+function callLift0Down(){
+    liftCall(0,"down");
 }
 
-async function moveTo6(){
+function callLift1Up(){
+    liftCall(1,"up");
+}
 
-    const level = 6;
-    calculateMove(level);
+function callLift1Down(){
+    liftCall(1,"down");
+}
+
+function callLift2Up(){
+    liftCall(2,"up");
+}
+
+function callLift2Down(){
+    liftCall(2,"down");
+}
+
+function callLift3Up(){
+    liftCall(3,"up");
+}
+
+function callLift3Down(){
+    liftCall(3,"down");
 }

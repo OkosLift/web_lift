@@ -32,18 +32,24 @@
         <script type='text/javascript' src = 'liftMove.js'></script>
         <script type='text/javascript' src = 'lift.js'></script> 
         <div style="text-align:center;width:400px;">
-            <button onclick="moveTo6()">6. Emeletre</button><br><br>
-            <button onclick="moveTo5()">5. Emeletre</button><br><br>
-            <button onclick="moveTo4()">4. Emeletre</button><br><br>
             <button onclick="moveTo3()">3. Emeletre</button><br><br>
             <button onclick="moveTo2()">2. Emeletre</button><br><br>
             <button onclick="moveTo1()">1. Emeletre</button><br><br>
             <button onclick="moveTo0()">0. Emeletre</button><br><br>
 
             <button onclick="selectLift0()">Select 0. lift</button>
-            <button onclick="selectLift1()">Select 1. lift</button>
-            <button onclick="selectLift2()">Select 2. lift</button>
-            <button onclick="selectLift3()">Select 3. lift</button>
+            <button onclick="selectLift1()">Select 1. lift</button><br><br>
+
+            <button onclick="callLift3Up()"     >call 3 UP</button>
+            <button onclick="callLift3Down()"   >call 3 DOWN</button><br>
+            <button onclick="callLift2Up()"     >call 2 UP</button>
+            <button onclick="callLift2Down()"   >call 2 DOWN</button><br>
+            <button onclick="callLift1Up()"     >call 1 UP</button>
+            <button onclick="callLift1Down()"   >call 1 DOWN</button><br>
+            <button onclick="callLift0Up()"     >call 0 UP</button>
+            <button onclick="callLift0Down()"   >call 0 DOWN</button><br>
+
+            
 
         </div>
     </body>
