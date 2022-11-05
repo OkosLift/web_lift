@@ -81,6 +81,7 @@ function moveup() {
 		//lift[i].speedY -= 1;
 	}
     currentLevel++;
+    console.log(currentLevel);
 }
 
 function movedown() {
@@ -89,108 +90,73 @@ function movedown() {
 		//lift[i].speedY += 1;
 	}
     currentLevel--;
+    console.log(currentLevel);
 }
 
-function moveTo0(){
+
+
+
+
+
+
+
+function delay(milliseconds){
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+}
+
+async function moveHelp(level){
+    while (currentLevel != level){
+        await delay(400);
+        if (currentLevel < level){
+            //felfele megy
+            moveup();
+        } else if (currentLevel > level){
+            //lefele megy
+            movedown();
+        }
+    }
+}
+
+async function moveTo0(){
 
     const level = 0;
-    
-    while (currentLevel != level){
-        if (currentLevel <= level){
-            //felfele megy
-        } else{
-            //lefele megy
-            movedown();
-        }
-    }
+    moveHelp(level);
 }
 
-function moveTo1(){
+async function moveTo1(){
 
     const level = 1;
-
-    while (currentLevel != level){
-        if (currentLevel < level){
-            //felfele megy
-            moveup();
-        } else if (currentLevel > level){
-            //lefele megy
-            movedown();
-        }
-    }
+    moveHelp(level);
 }
 
-function moveTo2(){
+async function moveTo2(){
 
     const level = 2;
-
-    while (currentLevel != level){
-        if (currentLevel < level){
-            //felfele megy
-            moveup();
-        } else if (currentLevel > level){
-            //lefele megy
-            movedown();
-        }
-    
+    moveHelp(level);
 }
 
-function moveTo3(){
+async function moveTo3(){
 
-    const level = 1;
-
-    while (currentLevel != level){
-        if (currentLevel < level){
-            //felfele megy
-            moveup();
-        } else if (currentLevel > level){
-            //lefele megy
-            movedown();
-        }
-    }
+    const level = 3;
+    moveHelp(level);
 }
 
-function moveTo4(){
+async function moveTo4(){
 
-    const level = 1;
-
-    while (currentLevel != level){
-        if (currentLevel < level){
-            //felfele megy
-            moveup();
-        } else if (currentLevel > level){
-            //lefele megy
-            movedown();
-        }
-    }
+    const level = 4;
+    moveHelp(level);
 }
 
-function moveTo5(){
+async function moveTo5(){
 
-    const level = 1;
-
-    while (currentLevel != level){
-        if (currentLevel < level){
-            //felfele megy
-            moveup();
-        } else if (currentLevel > level){
-            //lefele megy
-            movedown();
-        }
-    }
+    const level = 5;
+    moveHelp(level);
 }
 
-function moveTo6(){
+async function moveTo6(){
 
-    const level = 1;
-
-    while (currentLevel != level){
-        if (currentLevel < level){
-            //felfele megy
-            moveup();
-        } else if (currentLevel > level){
-            //lefele megy
-            movedown();
-        }
-    }
+    const level = 6;
+    moveHelp(level);
 }

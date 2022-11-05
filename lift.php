@@ -26,9 +26,6 @@
             //include-oljuk a js file-t amiben már a globális változók elérhetőek
         </script>
         <div style="text-align:center;width:400px;">
-            <button onclick="moveup()">FEL</button><br><br>
-            <button onclick="movedown()">LE</button>
-            
             <button onclick="moveTo0()">0. Emeletre</button><br><br>
             <button onclick="moveTo1()">1. Emeletre</button><br><br>
             <button onclick="moveTo2()">2. Emeletre</button><br><br>
