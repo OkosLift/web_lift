@@ -43,10 +43,6 @@
 
         <script>
         //Button functionok
-            function getLiftCurrentLevel(){
-                return currentLevel[getSelectedLift()];
-            }
-
             const enableButton = (button) => {
                 button.disabled = false;
             }
@@ -212,53 +208,7 @@
             /////////////////////////////////////////////
 
         //kiválasztás gombok
-            var selectedLift = 0;
-
-            function selectLift0(){
-                selectedLift = 0;
-                console.log("Selected lift: " +getSelectedLift());
-            }
-
-            function selectLift1(){
-                selectedLift = 1;
-                console.log("Selected lift: " +getSelectedLift());
-            }
-
-            function selectLift2(){
-                selectedLift = 2;
-                console.log("Selected lift: " +getSelectedLift());
-            }
-
-            function selectLift3(){
-                selectedLift = 3;
-                console.log("Selected lift: " +getSelectedLift());
-            }
-
-
-        // parancs gombok
-            async function moveTo0(){
-
-                const level = 0;
-                calculateMove(level);
-            }
-
-            async function moveTo1(){
-
-                const level = 1;
-                calculateMove(level);
-            }
-
-            async function moveTo2(){
-
-                const level = 2;
-                calculateMove(level);
-            }
-
-            async function moveTo3(){
-
-                const level = 3;
-                calculateMove(level);
-            }
+            var selectedLift = 0;   //max liftszám-1 
 
         //hivás gombok
 
@@ -294,9 +244,7 @@
                 liftCall(3,"down");
             }
 
-        // lift algoritmus
-
-            //classok
+        //classok
             class Request {
                 constructor() {
                     this.direction = [];
@@ -314,9 +262,14 @@
                     this.isRequestCompleted = true;
                 }
 
-                PopFront(){
+                PopFront(){ //visszaadja és kitörli
+                    let dir   = this.direction[0];
+                    let floor = this.initialFloor[0];
+
                     this.direction.shift();
                     this.initialFloor.shift();
+
+                    return floor;
                 }
 
                 print(){
@@ -326,24 +279,62 @@
                     }
                 }
             };
-        //Class Request
+        //Algoritmus
 
-            //call lift Functionok ide futnak egybe
-            function liftCall(level,upOrDown){
+            function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
                 generateRequest(upOrDown,level);
             }
 
             function generateRequest(upOrDown, requestFloorCalled){
 
                 request.Add(upOrDown,requestFloorCalled);
-                console.log("New Request asdasdAdded:\n");
-                request.print();
-
             }
 
+            async function DelegateRequest(){   //start gombbal indul
 
-            //LiftMove
-            function getLift(i){
+                while(request.initialFloor.length > 0){
+                    calculateSelectLift();
+                    await delay(500);
+                    calculateMove(request.PopFront());  
+                }
+            }
+
+            function calculateSelectLift(){ // ezt kell megoldani
+                
+                let lowestDistance = emeletszam;
+                let destFloor = request.initialFloor[0];
+
+                for(let i = 0 ; i < lift.length; i++){
+                    actualLift = i; 
+                    let distance = Math.abs(destFloor - currentLevel[i]); //abszolut érték
+                    
+                    console.log(actualLift + ". Lift distance to " + destFloor + " is: " + distance);
+
+                    if (distance < lowestDistance){
+                        lowestDistance = distance;
+                        selectedLift = actualLift;
+                    }
+                }
+
+                console.log( getSelectedLift() + ". Lift is the nearest!");
+            }
+
+            function calculateMove(level){
+                while (getLiftCurrentLevel() != level){
+                    if (getLiftCurrentLevel() < level){
+                        //felfele megy
+                        moveThatLift_UP(getSelectedLift());
+                    } else if (getLiftCurrentLevel() > level){
+                        //lefele megy
+                        moveThatLift_DOWN(getSelectedLift());
+                    }
+                    
+                }
+            }
+
+        //kis functionok
+
+            function getLift(i){    //ha túlindexelés van akkor helyre teszi
                 if (i >= liftszam)
                     i = liftszam-1;
                 else if (i < 0)
@@ -360,7 +351,7 @@
 
             var currentLevel = [0, 0, 0, 0];
 
-            function getLiftCurrentLevel(){
+            function getLiftCurrentLevel(){ //selectedLift aktuális szintje
                 return currentLevel[getSelectedLift()];
             }
 
@@ -386,20 +377,11 @@
             }
 
 
-            function calculateMove(level){
-                while (getLiftCurrentLevel() != level){
-                    if (getLiftCurrentLevel() < level){
-                        //felfele megy
-                        moveThatLift_UP(getSelectedLift());
-                    } else if (getLiftCurrentLevel() > level){
-                        //lefele megy
-                        moveThatLift_DOWN(getSelectedLift());
-                    }
-                    
-                }
+            
+
+            function getLiftCurrentLevel(){
+                return currentLevel[getSelectedLift()];
             }
-
-
 
             function delay(milliseconds){
                 return new Promise(resolve => {
@@ -407,50 +389,8 @@
                 });
             }
 
-            function calculateSelectLift(){ // ezt kell megoldani
-                
-                let lowestDistance = emeletszam;
-
-                for(let i = 0 ; i < lift.length; i++){
-                    actualLift = i;
-                    console.log(i + "= selected lift");
-                    let distance = Math.abs(request.initialFloor[0] - currentLevel[i]); //abszolut érték
-                    console.log("--------Distance =" + distance);
-                    
-                    if (distance < lowestDistance){
-                        lowestDistance = distance;
-                        selectedLift = actualLift;
-                        console.log("megvan: " + getSelectedLift());
-                    }
-                    console.log("--------LowDistance =" + lowestDistance);
-                    console.log(i + ".");
-                }
-            }
-
-
-            async function DelegateRequest(){
-                
-                calculateSelectLift();
-
-                while(request.initialFloor.length > 0){
-                    console.log("requests:")
-                    request.print();
-                    console.log("first to do: " + request.initialFloor[0]);
-                    await delay(500);
-                    calculateMove(request.initialFloor[0]);
-                    request.PopFront();
-                }
-            }
-
-
-
-
-            //main
+        //main
             request = new Request();
-
-
-
-
 
         </script>
 
