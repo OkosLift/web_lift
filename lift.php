@@ -30,6 +30,10 @@
         </script>
 
         <div style="text-align:center;width:400px;">
+            <button id="c5u"> Call 5 UP </button>
+            <button id="c5d"> Call 5 DOWN </button><br>
+            <button id="c4u"> Call 4 UP </button>
+            <button id="c4d"> Call 4 DOWN </button><br>
             <button id="c3u"> Call 3 UP </button>
             <button id="c3d"> Call 3 DOWN </button><br>
             <button id="c2u"> Call 2 UP </button>
@@ -101,13 +105,33 @@
             button7.addEventListener("click",function ()
                 { disableButton(button7);
                 });
+            
+            const button8 = document.getElementById("c4u");
+            button8.addEventListener("click", callLift4Up);
+            button8.addEventListener("click",function ()
+                { disableButton(button8);
+                });
+
+            const button9 = document.getElementById("c4d");
+            button9.addEventListener("click", callLift4Down);
+            button9.addEventListener("click",function ()
+                { disableButton(button9);
+                });
+
+            const button10 = document.getElementById("c5u");
+            button10.addEventListener("click", callLift5Up);
+            button10.addEventListener("click",function ()
+                { disableButton(button10);
+                });
+
+            const button11 = document.getElementById("c5d");
+            button11.addEventListener("click", callLift5Down);
+            button11.addEventListener("click",function ()
+                { disableButton(button11);
+                });
 
             const startButton = document.getElementById("start");
             startButton.addEventListener("click", DelegateRequest);
-
-
-
-
 
         //Canva
             var padlo = 10;
@@ -242,6 +266,22 @@
 
             function callLift3Down(){
                 liftCall(3,"down");
+            }
+
+            function callLift4Up(){
+                liftCall(4,"up");
+            }
+
+            function callLift4Down(){
+                liftCall(4,"down");
+            }
+
+            function callLift5Up(){
+                liftCall(5,"up");
+            }
+
+            function callLift5Down(){
+                liftCall(5,"down");
             }
 
         //classok
