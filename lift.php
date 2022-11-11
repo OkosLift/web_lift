@@ -30,17 +30,12 @@
         </script>
 
         <div style="text-align:center;width:400px;">
-            <button id="c4u"> Call 4 UP </button>
-            <button id="c4d"> Call 4 DOWN </button><br>
-            <button id="c3u"> Call 3 UP </button>
-            <button id="c3d"> Call 3 DOWN </button><br>
-            <button id="c2u"> Call 2 UP </button>
-            <button id="c2d"> Call 2 DOWN </button><br>
-            <button id="c1u"> Call 1 UP </button>
-            <button id="c1d"> Call 1 DOWN </button><br>
-            <button id="c0u"> Call 0 UP </button>
-            <button id="c0d"> Call 0 DOWN </button><br><br>
-            <button id="start"> Start </button><br><br>
+            <button id="c4"> Call 4</button><br>
+            <button id="c3"> Call 3</button><br>
+            <button id="c2"> Call 2</button><br>
+            <button id="c1"> Call 1</button><br>
+            <button id="c0"> Call 0</button><br><br>
+            <button id="start"> Start </button><br>
         </div>
 
         <script>
@@ -69,64 +64,34 @@
             }
 
         //Buttonok
-            const button0 = document.getElementById("c0u");
-            button0.addEventListener("click", callLift0Up);
+            const button0 = document.getElementById("c0");
+            button0.addEventListener("click", callLift0);
             button0.addEventListener("click",async function ()
                 {   disableButton(button0);
                 });
 
-            const button1 = document.getElementById("c0d");
-            button1.addEventListener("click", callLift0Down);
+            const button1 = document.getElementById("c1");
+            button1.addEventListener("click", callLift1);
             button1.addEventListener("click",function ()
-            { disableButton(button1);
-            });
+                { disableButton(button1);
+                });
 
-            const button2 = document.getElementById("c1u");
-            button2.addEventListener("click", callLift1Up);
+            const button2 = document.getElementById("c2");
+            button2.addEventListener("click", callLift2);
             button2.addEventListener("click",function ()
                 { disableButton(button2);
                 });
 
-            const button3 = document.getElementById("c1d");
-            button3.addEventListener("click", callLift1Down);
+            const button3 = document.getElementById("c3");
+            button3.addEventListener("click", callLift3);
             button3.addEventListener("click",function ()
                 { disableButton(button3);
                 });
-
-            const button4 = document.getElementById("c2u");
-            button4.addEventListener("click", callLift2Up);
+ 
+            const button4 = document.getElementById("c4");
+            button4.addEventListener("click", callLift4);
             button4.addEventListener("click",function ()
                 { disableButton(button4);
-                });
-
-            const button5 = document.getElementById("c2d");
-            button5.addEventListener("click", callLift2Down);
-            button5.addEventListener("click",function ()
-                { disableButton(button5);
-                });
-
-            const button6 = document.getElementById("c3u");
-            button6.addEventListener("click", callLift3Up);
-            button6.addEventListener("click",function ()
-                { disableButton(button6);
-                });
-
-            const button7 = document.getElementById("c3d");
-            button7.addEventListener("click", callLift3Down);
-            button7.addEventListener("click",function ()
-                { disableButton(button7);
-                });
-            
-            const button8 = document.getElementById("c4u");
-            button8.addEventListener("click", callLift4Up);
-            button8.addEventListener("click",function ()
-                { disableButton(button8);
-                });
-
-            const button9 = document.getElementById("c4d");
-            button9.addEventListener("click", callLift4Down);
-            button9.addEventListener("click",function ()
-                { disableButton(button9);
                 });
 
             const startButton = document.getElementById("start");
@@ -259,52 +224,24 @@
         //liften belüli gombok
         //hivás gombok
 
-            function callLift0Up(){
-                liftCall(0,"up");
+            function callLift0(){
+                liftCall(0,"");
             }
 
-            function callLift0Down(){
-                liftCall(0,"down");
+            function callLift1(){
+                liftCall(1,"");
             }
 
-            function callLift1Up(){
-                liftCall(1,"up");
+            function callLift2(){
+                liftCall(2,"");
             }
 
-            function callLift1Down(){
-                liftCall(1,"down");
+            function callLift3(){
+                liftCall(3,"");
             }
 
-            function callLift2Up(){
-                liftCall(2,"up");
-            }
-
-            function callLift2Down(){
-                liftCall(2,"down");
-            }
-
-            function callLift3Up(){
-                liftCall(3,"up");
-            }
-
-            function callLift3Down(){
-                liftCall(3,"down");
-            }
-
-            function callLift4Up(){
-                liftCall(4,"up");
-            }
-
-            function callLift4Down(){
-                liftCall(4,"down");
-            }
-
-            function callLift5Up(){
-                liftCall(5,"up");
-            }
-
-            function callLift5Down(){
-                liftCall(5,"down");
+            function callLift4(){
+                liftCall(4,"");
             }
 
         //classok
@@ -352,31 +289,50 @@
                     console.log(consoleLog);
                 }
             };
+
+
+            class liftLevelException{
+                constructor(num){
+                    this.number = num;
+                }
+
+                Get(){
+                    return this.number;
+                }
+
+                Set(num){
+                    this.number = num;
+                }
+            };
         //Algoritmus
 
             function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
-                generateRequest(upOrDown,level);
+                try{
+                    liftLevelExc.Set(level);
+                    generateRequest(upOrDown,level);
+                }catch(liftLevelExc){
+                    DelegateRequest();
+                }
             }
 
             function generateRequest(upOrDown, requestFloorCalled){
-
                 request.Add(upOrDown,requestFloorCalled);
+                throw liftLevelExc;
             }
 
             async function DelegateRequest(){   //start gombbal indul
-
                 while(request.initialFloor.length > 0){
                     request.print();
                     calculateSelectLift();
                     console.log(getSelectedLift() + ". Lift go to: " + request.NextFloor());
-                    await delay(500);
+                    await delay(1000);
                     calculateMove(request.NextFloor());
                     if (request.NextFloor() == getLiftCurrentLevel()){
                         request.PopFront();
                         break;
                     }  
-                    else 
-                        break;  //itt biztosítjuk hogy minden emelet váltáskor álljon meg
+                     //else 
+                        //break;  //itt biztosítjuk hogy minden emelet váltáskor álljon meg
                 }
             }
 
@@ -474,6 +430,7 @@
 
         //main
             request = new Request();
+            let liftLevelExc = new liftLevelException(0);
 
         </script>
 
