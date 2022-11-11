@@ -30,8 +30,6 @@
         </script>
 
         <div style="text-align:center;width:400px;">
-            <button id="c5u"> Call 5 UP </button>
-            <button id="c5d"> Call 5 DOWN </button><br>
             <button id="c4u"> Call 4 UP </button>
             <button id="c4d"> Call 4 DOWN </button><br>
             <button id="c3u"> Call 3 UP </button>
@@ -42,7 +40,7 @@
             <button id="c1d"> Call 1 DOWN </button><br>
             <button id="c0u"> Call 0 UP </button>
             <button id="c0d"> Call 0 DOWN </button><br><br>
-            <button id="start"> Start </button>
+            <button id="start"> Start </button><br><br>
         </div>
 
         <script>
@@ -56,6 +54,19 @@
                 await delay(2000);
                 enableButton(button);
             };
+
+            function disableButtonForever (button) {
+                button.disabled = true;
+            };
+
+            function stateHandle(button) {
+                console.log("stateHandle");
+                if(getLiftCurrentLevel() === request.NextFloor()) {
+                    enableButton(button);
+                } else {
+                    disableButtonForever(button);
+                }
+            }
 
         //Buttonok
             const button0 = document.getElementById("c0u");
@@ -118,20 +129,31 @@
                 { disableButton(button9);
                 });
 
-            const button10 = document.getElementById("c5u");
-            button10.addEventListener("click", callLift5Up);
-            button10.addEventListener("click",function ()
-                { disableButton(button10);
-                });
-
-            const button11 = document.getElementById("c5d");
-            button11.addEventListener("click", callLift5Down);
-            button11.addEventListener("click",function ()
-                { disableButton(button11);
-                });
-
             const startButton = document.getElementById("start");
             startButton.addEventListener("click", DelegateRequest);
+
+            /*
+
+            const go0Button =document.getElementById("go0");
+            go0Button.addEventListener("click", function(){ liftCall(0,""); });
+            
+            const go1Button =document.getElementById("go1");
+            go1Button.addEventListener("click", function(){ liftCall(1,""); });
+
+            const go2Button =document.getElementById("go2");
+            go2Button.addEventListener("click", function(){ liftCall(2,""); });
+
+            const go3Button =document.getElementById("go3");
+            go3Button.addEventListener("click", function(){ liftCall(3,""); });
+
+            const go4Button =document.getElementById("go4");
+            go4Button.addEventListener("click", function(){ liftCall(4,""); });
+            */
+            //disableButtonForever(go0Button);
+            //disableButtonForever(go1Button);
+            //disableButtonForever(go2Button);
+            //disableButtonForever(go3Button);
+            //disableButtonForever(go4Button);
 
         //Canva
             var padlo = 10;
@@ -234,6 +256,7 @@
         //kiválasztás gombok
             var selectedLift = 0;   //max liftszám-1 
 
+        //liften belüli gombok
         //hivás gombok
 
             function callLift0Up(){
@@ -290,14 +313,18 @@
                     this.direction = [];
                     this.initialFloor = [];
                     this.isRequestCompleted = false;
-                    console.log("Request létrehozva");
                 }
 
+                
                 Add(direct, initalF) {
                     this.direction.push(direct);
                     this.initialFloor.push(initalF);
+                    
+                    this.initialFloor.sort();
+                    console.log("requests:");
+                    this.print();
                 }
-
+                
                 Complete(){
                     this.isRequestCompleted = true;
                 }
@@ -312,11 +339,17 @@
                     return floor;
                 }
 
+                NextFloor(){
+                    return this.initialFloor[0];
+                }
+
                 print(){
+                    let consoleLog = "Requests: ";
                     for(let i = 0; i < this.direction.length; i++){
                         //console.log(i + ". request: " + getInitialFloor(i) + ", " + this.direction[i] + "\n");
-                        console.log(i +". Request:  " + this.initialFloor[i] + ", " + this.direction[i]);
+                        consoleLog += this.initialFloor[i] + ", ";
                     }
+                    console.log(consoleLog);
                 }
             };
         //Algoritmus
@@ -333,22 +366,30 @@
             async function DelegateRequest(){   //start gombbal indul
 
                 while(request.initialFloor.length > 0){
+                    request.print();
                     calculateSelectLift();
+                    console.log(getSelectedLift() + ". Lift go to: " + request.NextFloor());
                     await delay(500);
-                    calculateMove(request.PopFront());  
+                    calculateMove(request.NextFloor());
+                    if (request.NextFloor() == getLiftCurrentLevel()){
+                        request.PopFront();
+                        break;
+                    }  
+                    else 
+                        break;  //itt biztosítjuk hogy minden emelet váltáskor álljon meg
                 }
             }
 
             function calculateSelectLift(){ // ezt kell megoldani
                 
                 let lowestDistance = emeletszam;
-                let destFloor = request.initialFloor[0];
+                let destFloor = request.NextFloor();
 
                 for(let i = 0 ; i < lift.length; i++){
                     actualLift = i; 
                     let distance = Math.abs(destFloor - currentLevel[i]); //abszolut érték
                     
-                    console.log(actualLift + ". Lift distance to " + destFloor + " is: " + distance);
+                    //console.log(actualLift + ". Lift distance to " + destFloor + " is: " + distance);
 
                     if (distance < lowestDistance){
                         lowestDistance = distance;
@@ -356,7 +397,7 @@
                     }
                 }
 
-                console.log( getSelectedLift() + ". Lift is the nearest!");
+                //console.log( getSelectedLift() + ". Lift is the nearest!");
             }
 
             function calculateMove(level){
@@ -364,9 +405,11 @@
                     if (getLiftCurrentLevel() < level){
                         //felfele megy
                         moveThatLift_UP(getSelectedLift());
+                        break;
                     } else if (getLiftCurrentLevel() > level){
                         //lefele megy
                         moveThatLift_DOWN(getSelectedLift());
+                        break;
                     }
                     
                 }
