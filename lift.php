@@ -244,35 +244,69 @@
             }
 
         //classok
-            class Lift{
-                constructor(){
-                    this.selectedLift = 0;   //max liftszám-1 
-                    this.currentLevel = [0,0];
 
-                    console.log("sajt, " + liftszam);
-                    this.print();
+            class LiftArray{
+                constructor(){
+                    //belső változók
+                    this.myLiftArray = [new Lift(), new Lift()];
+                    this.selectedLift = 0;
+
+                    //inicializálás
+                    console.log("lift mérete: " + this.myLiftArray.length);
                 }
 
-                getSelectedLift(){
+            //függvények
+                getSelectedLiftID(){
                     return this.selectedLift;
                 }
 
-                getSelectedLiftCurrentLevel(){ //selectedLift aktuális szintje
-                    return this.currentLevel[this.getSelectedLift()];
+                getSelectedLift(){
+
+                    return this.myLiftArray[this.selectedLift];
+                }
+            
+                getSelectedLiftCurrentLevel(){
+                    return this.getSelectedLift().getCurrentLevel();    //itt mindig 0-át ad vissza,
                 }
 
-                getLiftCurrentLevel(i){
-                    if(i < 0)
-                        i = 0;
-                    else if(i > emeletszam-1)
-                        i = emeletszam-1;
+                selectLift(i){
+                    //if (i > liftszam-1)
+                    //    i = liftszam-1;
 
-                    return this.currentLevel[i];
+                    this.selectedLift = i;
                 }
 
-                print(){
-                    console.log(this.currentLevel.length);
+                getLift(i){
+                    return this.myLiftArray[i];
                 }
+
+                setSelectedLift(i){
+                    //if (i > liftszam-1)
+                    //    i = liftszam-1;
+
+                    this.selectedLift = i;
+                }
+
+                getCurrentLevelOf(i){
+                    return this.myLiftArray[i].getCurrentLevel();
+                }
+
+            };
+
+            class Lift{
+                constructor(){
+                    this.currentLevel = 0;
+                    this.isBusy = false;
+                }
+
+                getBusy(){
+                    return this.isBusy;
+                }
+
+                getCurrentLevel(){
+                    return this.currentLevel;
+                }
+
             };
 
 
@@ -280,7 +314,6 @@
                 constructor() {
                     this.direction = [];
                     this.initialFloor = [];
-                    this.isRequestCompleted = false;
                 }
 
                 
@@ -292,10 +325,7 @@
                     console.log("requests:");
                     this.print();
                 }
-                
-                Complete(){
-                    this.isRequestCompleted = true;
-                }
+            
 
                 PopFront(){ //visszaadja és kitörli
                     let dir   = this.direction[0];
@@ -321,44 +351,30 @@
                 }
             };
 
-
-            class liftLevelException{
-                constructor(num){
-                    this.number = num;
-                }
-
-                Get(){
-                    return this.number;
-                }
-
-                Set(num){
-                    this.number = num;
-                }
-            };
         //Algoritmus
 
             function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
                 try{
-                    let liftLevelExc = new liftLevelException(level);
                     generateRequest(upOrDown,level);
-                }catch(liftLevelExc){
+                }catch(request){
                     DelegateRequest();
                 }
             }
 
             function generateRequest(upOrDown, requestFloorCalled){
                 request.Add(upOrDown,requestFloorCalled);
-                throw liftLevelExc;
+                throw request;
             }
 
             async function DelegateRequest(){   //start gombbal indul
+                console.log("selected level: "+ elevators.getSelectedLiftCurrentLevel());
                 while(request.initialFloor.length > 0){
                     request.print();
                     calculateSelectLift();
-                    console.log(elevator.getSelectedLift() + ". Lift go to: " + request.NextFloor());
+                    console.log(elevators.getSelectedLiftID() + ". Lift go to: " + request.NextFloor());
                     await delay(1000);
                     calculateMove(request.NextFloor());
-                    if (request.NextFloor() == elevator.getSelectedLiftCurrentLevel()){
+                    if (request.NextFloor() == elevators.getSelectedLiftCurrentLevel()){
                         request.PopFront();
                         break;
                     }  
@@ -374,28 +390,28 @@
 
                 for(let i = 0 ; i < lift.length; i++){
                     actualLift = i; 
-                    let distance = Math.abs(destFloor - elevator.getLiftCurrentLevel(i)); //abszolut érték
+                    let distance = Math.abs(destFloor - elevators.getCurrentLevelOf(i)); //abszolut érték
                     
-                    //console.log(actualLift + ". Lift distance to " + destFloor + " is: " + distance);
+                    console.log(actualLift + ". Lift distance to " + destFloor + " is: " + distance);
 
                     if (distance < lowestDistance){
                         lowestDistance = distance;
-                        elevator.selectedLift = actualLift;
+                        elevators.setSelectedLift(actualLift);
                     }
                 }
 
-                //console.log( getSelectedLift() + ". Lift is the nearest!");
+                console.log( elevators.getSelectedLiftID() + ". Lift is the nearest!");
             }
 
             function calculateMove(level){
-                while (elevator.getSelectedLiftCurrentLevel() != level){
-                    if (elevator.getSelectedLiftCurrentLevel() < level){
+                while (elevators.getSelectedLiftCurrentLevel() != level){
+                    if (elevators.getSelectedLiftCurrentLevel() < level){
                         //felfele megy
-                        moveThatLift_UP(elevator.getSelectedLift());
+                        moveThatLift_UP(elevators.getSelectedLiftID());
                         break;
-                    } else if (elevator.getSelectedLiftCurrentLevel() > level){
+                    } else if (elevators.getSelectedLiftCurrentLevel() > level){
                         //lefele megy
-                        moveThatLift_DOWN(elevator.getSelectedLift());
+                        moveThatLift_DOWN(elevators.getSelectedLiftID());
                         break;
                     }
                     
@@ -416,21 +432,21 @@
 
             function moveThatLift_UP(i){
                 //await delay(100);
-                getLift[i];
+                //getLift[i];
 
                 lift[i].y -= kovi;
 
-                elevator.currentLevel[elevator.getSelectedLift()]++;
+                elevators.getSelectedLift().currentLevel++;
                 //console.log(getCurrentLevel());
             }
 
             function moveThatLift_DOWN(i){
                 //await delay(100);
-                getLift[i];
+                //getLift[i];
 
                 lift[i].y += kovi;
 
-                elevator.currentLevel[elevator.getSelectedLift()]--;
+                elevators.getSelectedLift().currentLevel--;
                 //console.log(getCurrentLevel());
             }
 
@@ -443,7 +459,7 @@
 
         //main
             request = new Request();
-            elevator = new Lift();
+            elevators = new LiftArray();
 
         </script>
 
