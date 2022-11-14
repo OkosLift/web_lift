@@ -226,7 +226,7 @@
 	this.canvas.addEventListener('click', function(evt) {
 		var mousePos = getMousePos(this.canvas, evt);
 		
-		var e = emeletszam;
+		var e = emeletszam-1;
 		
 		// lifteken beluli gombok
 		for(let i=0; i<liftszam; i++){
@@ -271,7 +271,7 @@
     <input type="number" name="emelet_num"></input> <br>
 	Lift darabszám:
     <input type="number" name="lift_num"></input> <br>
-    <input type="submit" name="insert" value="Világ liftjei egyesüljetek!"></input>
+    <input type="submit" name="insert" value="Rajzol"></input>
   </form>
  </body>
 </html>
