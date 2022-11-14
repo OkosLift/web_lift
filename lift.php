@@ -56,7 +56,7 @@
 
             function stateHandle(button) {
                 console.log("stateHandle");
-                if(getLiftCurrentLevel() === request.NextFloor()) {
+                if(elevator.getSelectedLiftCurrentLevel() === request.NextFloor()) {
                     enableButton(button);
                 } else {
                     disableButtonForever(button);
@@ -219,7 +219,6 @@
             /////////////////////////////////////////////
 
         //kiválasztás gombok
-            var selectedLift = 0;   //max liftszám-1 
 
         //liften belüli gombok
         //hivás gombok
@@ -245,6 +244,38 @@
             }
 
         //classok
+            class Lift{
+                constructor(){
+                    this.selectedLift = 0;   //max liftszám-1 
+                    this.currentLevel = [0,0];
+
+                    console.log("sajt, " + liftszam);
+                    this.print();
+                }
+
+                getSelectedLift(){
+                    return this.selectedLift;
+                }
+
+                getSelectedLiftCurrentLevel(){ //selectedLift aktuális szintje
+                    return this.currentLevel[this.getSelectedLift()];
+                }
+
+                getLiftCurrentLevel(i){
+                    if(i < 0)
+                        i = 0;
+                    else if(i > emeletszam-1)
+                        i = emeletszam-1;
+
+                    return this.currentLevel[i];
+                }
+
+                print(){
+                    console.log(this.currentLevel.length);
+                }
+            };
+
+
             class Request {
                 constructor() {
                     this.direction = [];
@@ -308,7 +339,7 @@
 
             function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
                 try{
-                    liftLevelExc.Set(level);
+                    let liftLevelExc = new liftLevelException(level);
                     generateRequest(upOrDown,level);
                 }catch(liftLevelExc){
                     DelegateRequest();
@@ -324,10 +355,10 @@
                 while(request.initialFloor.length > 0){
                     request.print();
                     calculateSelectLift();
-                    console.log(getSelectedLift() + ". Lift go to: " + request.NextFloor());
+                    console.log(elevator.getSelectedLift() + ". Lift go to: " + request.NextFloor());
                     await delay(1000);
                     calculateMove(request.NextFloor());
-                    if (request.NextFloor() == getLiftCurrentLevel()){
+                    if (request.NextFloor() == elevator.getSelectedLiftCurrentLevel()){
                         request.PopFront();
                         break;
                     }  
@@ -343,13 +374,13 @@
 
                 for(let i = 0 ; i < lift.length; i++){
                     actualLift = i; 
-                    let distance = Math.abs(destFloor - currentLevel[i]); //abszolut érték
+                    let distance = Math.abs(destFloor - elevator.getLiftCurrentLevel(i)); //abszolut érték
                     
                     //console.log(actualLift + ". Lift distance to " + destFloor + " is: " + distance);
 
                     if (distance < lowestDistance){
                         lowestDistance = distance;
-                        selectedLift = actualLift;
+                        elevator.selectedLift = actualLift;
                     }
                 }
 
@@ -357,14 +388,14 @@
             }
 
             function calculateMove(level){
-                while (getLiftCurrentLevel() != level){
-                    if (getLiftCurrentLevel() < level){
+                while (elevator.getSelectedLiftCurrentLevel() != level){
+                    if (elevator.getSelectedLiftCurrentLevel() < level){
                         //felfele megy
-                        moveThatLift_UP(getSelectedLift());
+                        moveThatLift_UP(elevator.getSelectedLift());
                         break;
-                    } else if (getLiftCurrentLevel() > level){
+                    } else if (elevator.getSelectedLiftCurrentLevel() > level){
                         //lefele megy
-                        moveThatLift_DOWN(getSelectedLift());
+                        moveThatLift_DOWN(elevator.getSelectedLift());
                         break;
                     }
                     
@@ -383,25 +414,13 @@
             }
 
 
-            function getSelectedLift(){
-                return selectedLift;
-            }
-
-
-            var currentLevel = [0, 0, 0, 0];
-
-            function getLiftCurrentLevel(){ //selectedLift aktuális szintje
-                return currentLevel[getSelectedLift()];
-            }
-
-
             function moveThatLift_UP(i){
                 //await delay(100);
                 getLift[i];
 
                 lift[i].y -= kovi;
 
-                currentLevel[getSelectedLift()]++;
+                elevator.currentLevel[elevator.getSelectedLift()]++;
                 //console.log(getCurrentLevel());
             }
 
@@ -411,16 +430,10 @@
 
                 lift[i].y += kovi;
 
-                currentLevel[getSelectedLift()]--;
+                elevator.currentLevel[elevator.getSelectedLift()]--;
                 //console.log(getCurrentLevel());
             }
 
-
-            
-
-            function getLiftCurrentLevel(){
-                return currentLevel[getSelectedLift()];
-            }
 
             function delay(milliseconds){
                 return new Promise(resolve => {
@@ -430,7 +443,7 @@
 
         //main
             request = new Request();
-            let liftLevelExc = new liftLevelException(0);
+            elevator = new Lift();
 
         </script>
 
