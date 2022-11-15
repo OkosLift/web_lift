@@ -327,13 +327,6 @@
 
                 addRequest(dir, floor){
                     this.requestArray.Add(dir, floor);
-
-                    //print
-                    let println = this.ID + ". Lift requests: "
-                    for(let i = 0; i < this.requestArray.Size(); i++){
-                        println += this.requestArray.initialFloor[i] + ", ";
-                    }
-                    console.log(println);
                 }
 
                 setDirection(){ //ezt itt még át kell gondolni
@@ -369,9 +362,12 @@
                 }
 
                 printRequests(){
+                    //print
+                    let println = this.ID + ". Lift requests: "
                     for(let i = 0; i < this.requestArray.Size(); i++){
-                        this.requestArray.print();
+                        println += this.requestArray.initialFloor[i] + ", ";
                     }
+                    console.log(println);
                 }
 
             };
@@ -414,12 +410,12 @@
                 }
 
                 print(){
-                    let consoleLog = "Requests: ";
-                    for(let i = 0; i < this.direction.length; i++){
-                        //console.log(i + ". request: " + getInitialFloor(i) + ", " + this.direction[i] + "\n");
-                        consoleLog += this.initialFloor[i] + ", ";
+                    //print
+                    let println = "global requests: ";
+                    for(let i = 0; i < this.initialFloor.length; i++){
+                        println += this.initialFloor[i] + ", ";
                     }
-                    console.log(consoleLog);
+                    console.log(println);
                 }
             };
 
@@ -443,9 +439,10 @@
             async function DelegateRequest(){ 
                 do{
                     RequestAddToLift();
-                    Ride();
                     await delay(1000);
-                }while(elevators.getAllRequestSizeFromEveryLift() > 0);
+                    Ride();
+                    globalRequests.print();
+                }while(globalRequests.Size() > 0);
             }
 
             function RequestAddToLift(){
@@ -457,10 +454,13 @@
                             elevators.getLift(i).addRequest(globalRequests.NextDirection(),globalRequests.NextFloor());
                             globalRequests.PopFront();
 
-                            elevators.getLift(i).isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
+                            elevators.getLift(i).isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen //emiatt mindig csak 1 requestet fogad be
                         }    
                     }
                 }
+
+                elevators.myLiftArray[0].printRequests();
+                elevators.myLiftArray[1].printRequests();
             }
 
             function Ride(){
