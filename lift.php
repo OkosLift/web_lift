@@ -14,11 +14,27 @@
 	body {
 		background-color: #1f1f1f;
 		color: #ffffff;
+		font-family: Monospace;
 	}
+	
+	input[type=number]{
+		width: 6em;
+	}
+	
+	.gombok {
+		width: 100px;
+		text-align: center;
+	}
+	
+	.form {
+		width: 250px;
+	}
+	
+	
+	
   </style>
  </head>
  <body onload="startLift()" >
-
   <canvas id="canvas"></canvas>
   <script>
 
@@ -72,7 +88,7 @@
 	var level = lift.height + padlo.height;
 	
 	// az egesz liftakna (canvas) szelessege
-	var szeles = (padlo.width + liftGomb.width) * liftszam;
+	var szeles = padlo.width * liftszam + emeletGomb.width;
 
 	function startLift() {
 		for(let i = 0; i<liftszam; i++){
@@ -88,7 +104,6 @@
 					akt--;
 				}	
 			}
-			
 		}
 		
 		for(let i = 0; i<emeletszam; i++){
@@ -102,7 +117,6 @@
 						floorButton[i][0] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding - emeletGomb.height);
 						floorButton[i][1] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding*2 - emeletGomb.height*2);
 					}
-				
 		}
 		
 		liftAkna.start();
@@ -122,12 +136,11 @@
 				if(i==0){
 					floorButton[i][0].update();
 				}else if(i==emeletszam-1){
-					floorButton[i][1].update();
+						floorButton[i][1].update();
 					}else{
 						floorButton[i][0].update();
 						floorButton[i][1].update();
 					}
-			
 			}
 			for(let i=0; i<liftszam; i++){
 				elevator[i].update();
@@ -176,13 +189,13 @@
 			floor[i].update();
 			
 			if(i==0){
-					floorButton[i][0].update();
-				}else if(i==emeletszam-1){
+				floorButton[i][0].update();
+			}else if(i==emeletszam-1){
 					floorButton[i][1].update();
-					}else{
-						floorButton[i][0].update();
-						floorButton[i][1].update();
-					}
+				}else{
+					floorButton[i][0].update();
+					floorButton[i][1].update();
+				}
 		}
 	}
 
@@ -221,7 +234,7 @@
 	}
 	
 	
-	// itt van minden kattintható gomb ***********************************************************************************************************************
+	// itt van minden kattinthato gomb ***********************************************************************************************************************
 	
 	this.canvas.addEventListener('click', function(evt) {
 		var mousePos = getMousePos(this.canvas, evt);
@@ -240,38 +253,42 @@
 		// emeletek gombjai
 		for(let i=0; i<emeletszam; i++){
 			if(i==0){
-					// legfelso emelet (1 gomb)
+				// legfelso emelet (1 gomb)
+				if (isInsideButton(mousePos, floorButton[i][0])) {
+					alert((e-i)+". emelet liftet vár lefelé");
+				}
+				//legalso emelet (1 gomb)
+			}else if(i==emeletszam-1){
+				if (isInsideButton(mousePos, floorButton[i][1])) {
+					alert((e-i)+". emelet liftet vár felfelé");
+				}
+				}else{
+					//koztes emeletek le/fel gombjai
 					if (isInsideButton(mousePos, floorButton[i][0])) {
 						alert((e-i)+". emelet liftet vár lefelé");
 					}
-					//legalso emelet (1 gomb)
-				}else if(i==emeletszam-1){
 					if (isInsideButton(mousePos, floorButton[i][1])) {
 						alert((e-i)+". emelet liftet vár felfelé");
 					}
-					}else{
-						//koztes emeletek le/fel gombjai
-						if (isInsideButton(mousePos, floorButton[i][0])) {
-							alert((e-i)+". emelet liftet vár lefelé");
-						}
-						if (isInsideButton(mousePos, floorButton[i][1])) {
-							alert((e-i)+". emelet liftet vár felfelé");
-						}
-					}
+				}
 		}
 	});
 
   </script>
-  <div style="text-align:center;width:200px;">
+  <div class="gombok">
    <button onclick="moveup()">FEL</button><br><br>
    <button onclick="movedown()">LE</button>
   </div>
-  <form action="lift.php" method="POST"> 
-    Emelet darabszám:
-    <input type="number" name="emelet_num"></input> <br>
-	Lift darabszám:
-    <input type="number" name="lift_num"></input> <br>
-    <input type="submit" name="insert" value="Rajzol"></input>
-  </form>
+  <div class="form">
+   <form action="lift.php" method="POST"> 
+    <b>Emelet darabszám:</b>
+    <input type="number" name="emelet_num" value="<?php echo $_POST["emelet_num"]; ?>" min="1" max="60"></input> <br>
+	<b>Lift darabszám:&emsp;&emsp;</b>
+    <input type="number" name="lift_num" value="<?php echo $_POST["lift_num"]; ?>" min="1" max="60"></input> <br>
+    <div class="gombok">
+	<input type="submit" name="insert" value="RAJZOL"></input>
+    </div>
+   </form>
+  </div>
  </body>
 </html>
