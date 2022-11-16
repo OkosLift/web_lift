@@ -284,7 +284,7 @@
             getAllRequestSizeFromEveryLift(){
                 let allRequestSize = 0;
                 for (let i = 0; i < this.myLiftArray.length; i++){
-                    allRequestSize += this.myLiftArray[i].requestArray.Size();
+                    allRequestSize += this.myLiftArray[i].requestArray.length;
                 }
                 return allRequestSize;
             }
@@ -296,7 +296,7 @@
                 this.ID = id;
                 this.currentFloor = 0;
                 this.isBusy = false;
-                this.requestArray = new Request();
+                this.requestArray = [];
                 this.direction = 2;     //0 - DOWN, 1 - UP, 2 or else - IDLE
                 this.goToInsideLift;
             }
@@ -309,13 +309,13 @@
                 return this.currentFloor;
             }
 
-            addRequest(dir, floor){
-                this.requestArray.Add(dir, floor);
+            addRequest(request){
+                this.requestArray.push(request);
 
                 //print
                 let println = this.ID + ". Lift requests: "
-                for(let i = 0; i < this.requestArray.Size(); i++){
-                    println += this.requestArray.initialFloor[i] + ", ";
+                for(let i = 0; i < this.requestArray.length; i++){
+                    println += this.requestArray[i].toString();
                 }
                 console.log(println);
             }
@@ -374,48 +374,27 @@
 
 
         class Request {
-            constructor() {
-                this.direction = [];
-                this.initialFloor = [];
+            constructor(floor, dir) {
+                this.initialFloor = floor;
+                this.direction = dir;
+                this.pushedButtons = []; // liften belüli gombnyomások
+
             }
 
-            Size(){
-                return this.initialFloor.length;
+            getDirection(){
+                return this.direction;
             }
-            
-            Add(direct, initalF) {
-                this.direction.push(direct);
-                this.initialFloor.push(initalF);
+
+            getFloor(){
                 
-                this.initialFloor.sort();   //sorba rendezés, ezt át kell alakítani
-            }
-        
-            PopFront(){ //visszaadja és kitörli az elejéről
-                let dir   = this.direction[0];
-                let floor = this.initialFloor[0];
-
-                this.direction.shift();
-                this.initialFloor.shift();
-
-                return floor;
+                return this.initialFloor;
             }
 
-            NextDirection(){
-                return (this.initialFloor[0] == undefined ? "NO REQUEST" : this.initialFloor[0]);
-            }
-
-            NextFloor(){
+            toString(){
                 
-                return (this.initialFloor[0] == undefined ? "NO REQUEST" : this.initialFloor[0]);
-            }
+                return ( "(" + this.initialFloor + ", " + this.direction + ")" ); 
+                //még a pushedButtonst is add hozzá for ciklussal köszi ;)
 
-            print(){
-                let consoleLog = "Requests: ";
-                for(let i = 0; i < this.direction.length; i++){
-                    //console.log(i + ". request: " + getInitialFloor(i) + ", " + this.direction[i] + "\n");
-                    consoleLog += this.initialFloor[i] + ", ";
-                }
-                console.log(consoleLog);
             }
         };
 
@@ -432,9 +411,9 @@
         }
 
         function generateRequest(upOrDown, requestFloorCalled){
-
-            globalRequests.Add(upOrDown,requestFloorCalled);
-            console.log("new request: " + requestFloorCalled);
+            let newRequest = new Request(requestFloorCalled, upOrDown);
+            globalRequests.push(newRequest);
+            console.log("new request: " + newRequest.toString());
             throw globalRequests;
         }
 
@@ -450,10 +429,10 @@
             //sorba hozzáadjuk a requesteket a liftekhez, 0. req-> 0. lift, 1. req -> 1.lift
 
             for(let i = 0; i< liftszam ; i++){
-                if(globalRequests.Size() > 0){  //a globálrequest ne legyen üres
+                if(globalRequests.length > 0){  //a globálrequest ne legyen üres
                     if(elevators.getLift(i).getBusy() == false){
-                        elevators.getLift(i).addRequest(globalRequests.NextDirection(),globalRequests.NextFloor());
-                        globalRequests.PopFront();
+                        elevators.getLift(i).addRequest(globalRequests[0]);
+                        globalRequests.shift();
 
                         elevators.getLift(i).isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
                     }    
@@ -464,9 +443,9 @@
         function Ride(){
 
             for(let i = 0; i< liftszam ; i++){
-                if(elevators.getLift(i).requestArray.Size() > 0){
-                    if (elevators.getLift(i).start(elevators.getLift(i).requestArray.NextFloor())){
-                        elevators.getLift(i).requestArray.PopFront();   //itt éri el a szintet, kitöröljük a requestjét
+                if(elevators.getLift(i).requestArray.length > 0){
+                    if (elevators.getLift(i).start(elevators.getLift(i).requestArray[0].getFloor())){
+                        elevators.getLift(i).requestArray.shift();   //itt éri el a szintet, kitöröljük a requestjét
                         //itt kéne megnyomni a gombokat
                         
                         //itt kéne megnyomni a gombokat
@@ -501,8 +480,8 @@
         }
 
     //main
-        globalRequests = new Request();
-        elevators = new LiftArray();
+        var globalRequests = [];
+        var elevators = new LiftArray();
 
   </script>
   <div class="form">
