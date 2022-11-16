@@ -463,6 +463,7 @@
                 if(elevators.getLift(i).requestArray.Size() > 0){
                     if (elevators.getLift(i).start()){
                         elevators.getLift(i).requestArray.PopFront();   //itt éri el a szintet, kitöröljük a requestjét
+                        //itt kéne megnyomni a gombokat
                         elevators.getLift(i).isBusy = false;            //most már újra elérhető a lift
                     }
                     
