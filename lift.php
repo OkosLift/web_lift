@@ -255,24 +255,36 @@
 			if(i==0){
 				// legfelso emelet (1 gomb)
 				if (isInsideButton(mousePos, floorButton[i][0])) {
-					alert((e-i)+". emelet liftet vár lefelé");
+                    liftCall(e-i,"DOWN");
 				}
 				//legalso emelet (1 gomb)
 			}else if(i==emeletszam-1){
 				if (isInsideButton(mousePos, floorButton[i][1])) {
-					alert((e-i)+". emelet liftet vár felfelé");
+                    liftCall(e-i,"UP");
 				}
 				}else{
 					//koztes emeletek le/fel gombjai
 					if (isInsideButton(mousePos, floorButton[i][0])) {
-						alert((e-i)+". emelet liftet vár lefelé");
+                        liftCall(e-i,"DOWN");
 					}
 					if (isInsideButton(mousePos, floorButton[i][1])) {
-						alert((e-i)+". emelet liftet vár felfelé");
+                        liftCall(e-i,"UP");
 					}
 				}
 		}
 	});
+
+    //Lehi
+
+    function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
+                //try{
+                    console.log("hívás emelet: " + level + ", " + upOrDown);
+                    //generateRequest(upOrDown,level);
+                //}catch(globalRequests){
+
+                    //DelegateRequest();
+                //}
+            }
 
   </script>
   <div class="gombok">
