@@ -198,28 +198,7 @@
 				}
 		}
 	}
-/*
-	function moveup() {
-		for(let i=0; i<liftszam; i++){
-			elevator[i].y -= level;
-			//elevator[i].speedY -= 1;
-			for(let j=0; j<emeletszam; j++){
-				elevatorButton[i][j].y -= level;
-			}
-		}
-	}
 
-	function movedown() {
-		for(let i=0; i<liftszam; i++){
-			elevator[i].y += level;
-			//elevator[i].speedY += 1;
-			for(let j=0; j<emeletszam; j++){
-				elevatorButton[i][j].y += level;
-			}
-		}
-			
-	}
-*/
 	function isInsideButton(pos, rect){
 		return	pos.x > rect.x && pos.x < rect.x+rect.width &&
 				pos.y > rect.y && pos.y < rect.y+rect.height;
@@ -507,10 +486,6 @@
         elevators = new LiftArray();
 
   </script>
-  <div class="gombok">
-   <button onclick="moveup()">FEL</button><br><br>
-   <button onclick="movedown()">LE</button>
-  </div>
   <div class="form">
    <form action="lift.php" method="POST"> 
     <b>Emelet darabszám:</b>
