@@ -225,6 +225,8 @@
 			for(let j=0; j<emeletszam; j++){
 				if (isInsideButton(mousePos, elevatorButton[i][j])) {
 					alert(i+". lift menjen a(z) "+j+". emeletre");
+                    elevators.getLift(i).goToInsideLift = j;
+                    ButtonInsideLift(i);
 				}
 			}
 		}
@@ -296,6 +298,7 @@
                 this.isBusy = false;
                 this.requestArray = new Request();
                 this.direction = 2;     //0 - DOWN, 1 - UP, 2 or else - IDLE
+                this.goToInsideLift;
             }
 
             getBusy(){
@@ -328,10 +331,10 @@
                 }
             }
 
-            start(){
-                if(this.currentFloor > this.requestArray.NextFloor())
+            start(goTo){
+                if(this.currentFloor > goTo)
                     this.moveDown();
-                else if( this.currentFloor < this.requestArray.NextFloor())
+                else if( this.currentFloor < goTo)
                     this.moveUp();
                 else
                     return true;    //odaért
@@ -420,6 +423,7 @@
 
         function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
             try{
+
                 console.log("hívás emelet: " + level + ", " + upOrDown);
                 generateRequest(upOrDown,level);
             }catch(globalRequests){
@@ -437,8 +441,8 @@
         async function DelegateRequest(){ 
             do{
                 RequestAddToLift();
-                Ride();
                 await delay(1000);
+                Ride();
             }while(elevators.getAllRequestSizeFromEveryLift() > 0);
         }
 
@@ -461,8 +465,10 @@
 
             for(let i = 0; i< liftszam ; i++){
                 if(elevators.getLift(i).requestArray.Size() > 0){
-                    if (elevators.getLift(i).start()){
+                    if (elevators.getLift(i).start(elevators.getLift(i).requestArray.NextFloor())){
                         elevators.getLift(i).requestArray.PopFront();   //itt éri el a szintet, kitöröljük a requestjét
+                        //itt kéne megnyomni a gombokat
+                        
                         //itt kéne megnyomni a gombokat
                         elevators.getLift(i).isBusy = false;            //most már újra elérhető a lift
                     }
@@ -471,6 +477,18 @@
                 
             }
 
+        }
+
+        function ButtonInsideLift(i){
+            let goTo = elevators.getLift(i).goToInsideLift;
+
+            console.log(elevators.getLift(i).ID + " megyek " + goTo);
+
+            //addig nem megyünk tovább
+
+            while(elevators.getLift(i).currentFloor != goTo){
+                elevators.getLift(i).start(goTo);
+            }
         }
 
 
