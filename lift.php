@@ -38,8 +38,9 @@
   <canvas id="canvas"></canvas>
   <script>
 
-	var emeletszam = <?php echo $_POST["emelet_num"]; ?>;
-	var liftszam = <?php echo $_POST["lift_num"]; ?>;
+    //hogy gyorsabb legyen tesztelni
+	var emeletszam = 5;//<?php echo $_POST["emelet_num"]; ?>;
+	var liftszam = 1;//<?php echo $_POST["lift_num"]; ?>;
 
 	var liftGomb = {
 		height: 20,
@@ -224,9 +225,12 @@
 		for(let i=0; i<liftszam; i++){
 			for(let j=0; j<emeletszam; j++){
 				if (isInsideButton(mousePos, elevatorButton[i][j])) {
-					alert(i+". lift menjen a(z) "+j+". emeletre");
-                    elevators.getLift(i).goToInsideLift = j;
-                    ButtonInsideLift(i);
+					//alert(i+". lift menjen a(z) "+j+". emeletre");
+
+                    if(elevators[i].requestArray.length != 0)
+                        ButtonInsideLift(i,j);
+                    else
+                        console.log("nem hívtad a liftet");
 				}
 			}
 		}
@@ -266,7 +270,6 @@
                     this.isBusy = false;
                     this.requestArray = [];
                     this.direction = 2;     //0 - DOWN, 1 - UP, 2 or else - IDLE
-                    this.goToInsideLift;
                 }
 
                 getBusy(){
@@ -404,15 +407,23 @@
 
         function RequestAddToLift(){
             //sorba hozzáadjuk a requesteket a liftekhez, 0. req-> 0. lift, 1. req -> 1.lift
+            
+            
+            //ideigelenes teszt
+            let line = "global requestek: "
+                        
+                        for(let i = 0; i < globalRequests.length; i++){
+                            line += globalRequests[i].toString() + ", ";
+                        }
+                        console.log(line);
+            //ideigelenes teszt
+
 
             for(let i = 0; i< liftszam ; i++){
                 if(globalRequests.length > 0){  //a globálrequest ne legyen üres
-                    if(elevators[i].getBusy() == false){
-                        elevators[i].addRequest(globalRequests[0]);
-                        globalRequests.shift();
-
-                        elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
-                    }    
+                    elevators[i].addRequest(globalRequests[0]);
+                    globalRequests.shift();
+                    elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
                 }
             }
         }
@@ -420,12 +431,9 @@
         function Ride(){
 
             for(let i = 0; i< liftszam ; i++){
-                if(elevators[i].requestArray.length > 0){
+                if(elevators[i].requestArray.length != 0){
                     if (elevators[i].start(elevators[i].requestArray[0].getFloor())){
-                        elevators[i].requestArray.shift();   //itt éri el a szintet, kitöröljük a requestjét
-                        //itt kéne megnyomni a gombokat
-                        
-                        //itt kéne megnyomni a gombokat
+                        //elevators[i].requestArray.shift();   //itt éri el a szintet, kitöröljük a requestjét
                         elevators[i].isBusy = false;            //most már újra elérhető a lift
                     }
                     
@@ -435,16 +443,38 @@
 
         }
 
-        function ButtonInsideLift(i){
-            let goTo = elevators.getLift(i).goToInsideLift;
+        function ButtonInsideLift(i,goTo){
+            elevators[i].requestArray[0].pushedButtons.push(goTo);
 
-            console.log(elevators.getLift(i).ID + " megyek " + goTo);
+            console.log(i + ". lift, ide kell mennem: " + elevators[i].requestArray[0].pushedButtons[0]);
 
-            //addig nem megyünk tovább
-
-            while(elevators.getLift(i).currentFloor != goTo){
-                elevators.getLift(i).start(goTo);
+            while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){    
+                     
+                elevators[i].start(elevators[i].requestArray[0].pushedButtons[0]);
             }
+
+            elevators[i].requestArray.shift(); // kitöröljük a requestet a végén
+
+            /*
+                try{
+                    elevators[i].requestArray[0].pushedButtons.push(goTo);
+                    throw goTo;
+                }catch(goTo){
+                    do{
+                        
+                        while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){
+                            
+                            elevators.getLift(i).start(elevators[i].requestArray[0].pushedButtons[0]);
+                        }
+                        elevators[i].requestArray[0].pushedButtons.shift();
+                        console.log(i + ". lift odaért: " + goTo);
+
+                    }while(elevators[i].requestArray[0].pushedButtons != 0);
+                    elevators[i].requestArray.shift();
+                }
+            */
+            
+
         }
 
 
