@@ -38,9 +38,9 @@
   <canvas id="canvas"></canvas>
   <script>
 
-    //hogy gyorsabb legyen tesztelni
-	var emeletszam = 5;//<?php echo $_POST["emelet_num"]; ?>;
-	var liftszam = 1;//<?php echo $_POST["lift_num"]; ?>;
+
+	var emeletszam = <?php echo $_POST["emelet_num"]; ?>;
+	var liftszam = <?php echo $_POST["lift_num"]; ?>;
 
 	var liftGomb = {
 		height: 20,
@@ -373,8 +373,6 @@
 
         function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
             try{
-
-                console.log("hívás emelet: " + level + ", " + upOrDown);
                 generateRequest(upOrDown,level);
             }catch(globalRequests){
                 DelegateRequest();
@@ -419,11 +417,14 @@
             //ideigelenes teszt
 
 
+
+
             for(let i = 0; i< liftszam ; i++){
-                if(globalRequests.length > 0){  //a globálrequest ne legyen üres
+                if(globalRequests.length > 0 && !elevators[i].getBusy()){  //a globálrequest ne legyen üres
                     elevators[i].addRequest(globalRequests[0]);
                     globalRequests.shift();
                     elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
+                    console.log(i + ". lift = elfoglalt");
                 }
             }
         }
@@ -432,11 +433,7 @@
 
             for(let i = 0; i< liftszam ; i++){
                 if(elevators[i].requestArray.length != 0){
-                    if (elevators[i].start(elevators[i].requestArray[0].getFloor())){
-                        //elevators[i].requestArray.shift();   //itt éri el a szintet, kitöröljük a requestjét
-                        elevators[i].isBusy = false;            //most már újra elérhető a lift
-                    }
-                    
+                    elevators[i].start(elevators[i].requestArray[0].getFloor());
                 }
                 
             }
@@ -454,6 +451,8 @@
             }
 
             elevators[i].requestArray.shift(); // kitöröljük a requestet a végén
+            elevators[i].isBusy = false;
+            console.log(i + ". lift = szabad");
 
             /*
                 try{
