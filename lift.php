@@ -454,40 +454,46 @@
 
         function ButtonInsideLift(i,goTo){
             elevators[i].requestArray[0].pushedButtons.push(goTo);
+        function getPushedButtonsLength(lift_id){
+            if(!elevators[lift_id].requestArray.length)
+                return elevators[lift_id].requestArray[0].pushedButtons.length;
+            else 
+             return 0;
+        }
 
-            console.log(i + ". lift, ide kell mennem: " + elevators[i].requestArray[0].pushedButtons[0]);
+        async function ButtonInsideLift(i,goTo){
+            try{
+                console.log(goTo);
+                //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
+                elevators[i].requestArray[0].pushedButtons.push(goTo);
+                throw goTo;
+            }catch(goTo){
+                await delay(2000); 
+                //azért várunk hogyha több ember szált be akkor megtudja nyomni a gombokat
 
-            while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){    
-                     
-                elevators[i].start(elevators[i].requestArray[0].pushedButtons[0]);
-            }
-			
-			//door[i].x -= padlo.width*(i+1);
-            elevators[i].requestArray.shift(); // kitöröljük a requestet a végén
-            elevators[i].isBusy = false;
-            console.log(i + ". lift = szabad");
-
-            /*
-                try{
-                    elevators[i].requestArray[0].pushedButtons.push(goTo);
-                    throw goTo;
-                }catch(goTo){
-                    do{
+                //az első gombnyomáshoz megy oda addig amig oda nem ér
+                while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){    
                         
-                        while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){
-                            
-                            elevators.getLift(i).start(elevators[i].requestArray[0].pushedButtons[0]);
-                        }
-                        elevators[i].requestArray[0].pushedButtons.shift();
-                        console.log(i + ". lift odaért: " + goTo);
-
-                    }while(elevators[i].requestArray[0].pushedButtons != 0);
-                    elevators[i].requestArray.shift();
+                    elevators[i].start(elevators[i].requestArray[0].pushedButtons[0]);
                 }
-            */
-            
+                //ha odaért kitörli az első gombnyomást
+                elevators[i].requestArray[0].pushedButtons.shift();
+
+                //ha nincs több gombnyomás a liften belül akkor kész a request
+                if(!elevators[i].requestArray[0].pushedButtons.length){
+                    elevators[i].requestArray.shift();
+                    elevators[i].isBusy = false;
+                    console.log(i + ". lift = szabad");
+                }
+            }
 
         }
+            
+
+
+            
+
+        
 
 
     //kis functionok
