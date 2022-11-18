@@ -381,7 +381,6 @@
                     };
 
             //Algoritmus
-
                 function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
                     try{
                         generateRequest(upOrDown,level);
@@ -405,29 +404,16 @@
                     }while(getAllRequestFromElevators() > 0);
                 }
 
-                function getAllRequestFromElevators(){
-                    let result = 0;
-                    for(let i = 0; i< elevators.length; i++){
-                        result += elevators[i].requestArray.length;
-                    }
-                    return result;
-                }
-
                 function RequestAddToLift(){
                     //sorba hozzáadjuk a requesteket a liftekhez, 0. req-> 0. lift, 1. req -> 1.lift
-                    
-                    
+                     
                     //ideigelenes teszt
-                    let line = "global requestek: "
-                                
+                    let line = "global requestek: ";          
                                 for(let i = 0; i < globalRequests.length; i++){
                                     line += globalRequests[i].toString() + ", ";
                                 }
                                 console.log(line);
                     //ideigelenes teszt
-
-
-
 
                     for(let i = 0; i< liftszam ; i++){
                         if(globalRequests.length > 0 && !elevators[i].getBusy()){  //a globálrequest ne legyen üres
@@ -440,23 +426,15 @@
                 }
 
                 function Ride(){
-
                     for(let i = 0; i< liftszam ; i++){
                         if(elevators[i].requestArray.length != 0){
                             elevators[i].start(elevators[i].requestArray[0].getFloor());
                         }
                         
                     }
-
                 }
-
-                function getPushedButtonsLength(lift_id){
-                    if(!elevators[lift_id].requestArray.length)
-                        return elevators[lift_id].requestArray[0].pushedButtons.length;
-                    else 
-                    return 0;
-                }
-
+                
+            //Liften belüli hívás
                 async function ButtonInsideLift(i,goTo){
                     try{
                         console.log(goTo);
@@ -487,11 +465,26 @@
                     
             //kis functionok
 
-                function delay(milliseconds){
-                    return new Promise(resolve => {
-                        setTimeout(resolve, milliseconds);
-                    });
+            function getPushedButtonsLength(lift_id){
+                if(!elevators[lift_id].requestArray.length)
+                    return elevators[lift_id].requestArray[0].pushedButtons.length;
+                else 
+                    return 0;
+            }
+
+            function getAllRequestFromElevators(){
+                let result = 0;
+                for(let i = 0; i< elevators.length; i++){
+                    result += elevators[i].requestArray.length;
                 }
+                return result;
+            }
+
+            function delay(milliseconds){
+                return new Promise(resolve => {
+                    setTimeout(resolve, milliseconds);
+                });
+            }
 
             //main
                 var globalRequests = [];
