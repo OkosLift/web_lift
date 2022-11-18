@@ -38,6 +38,7 @@
   <canvas id="canvas"></canvas>
   <script>
 
+
 	var emeletszam = <?php echo $_POST["emelet_num"]; ?>;
 	var liftszam = <?php echo $_POST["lift_num"]; ?>;
 
@@ -69,6 +70,7 @@
 
 	var elevator = new Array(liftszam);
 	var floor = new Array(emeletszam);
+	var door = new Array(liftszam);
 	
 	var elevatorButton = new Array(liftszam);
 	for (let i = 0; i < liftszam; i++) {
@@ -92,30 +94,31 @@
 
 	function startLift() {
 		for(let i = 0; i<liftszam; i++){
-			elevator[i] = new component(lift.width, lift.height, "red", lift.padding+(2*lift.padding+lift.width)*i, (emeletszam-1)*level);
+			elevator[i] = new component(lift.width, lift.height, "red", lift.padding+(2*lift.padding+lift.width)*i, (emeletszam-1)*level, i);
 			
 			var akt = liftGomb.sorNum-1;
 			for(let j = 0; j<emeletszam; j++){
 				if(j%2==0){
-					elevatorButton[i][j] = new component(liftGomb.width, liftGomb.height, "lime", lift.padding + liftGomb.padding + padlo.width*i,						(emeletszam-1)*level + liftGomb.padding + ((liftGomb.padding + liftGomb.height) * akt));
+					elevatorButton[i][j] = new component(liftGomb.width, liftGomb.height, "lime", lift.padding + liftGomb.padding + padlo.width*i,						(emeletszam-1)*level + liftGomb.padding + ((liftGomb.padding + liftGomb.height) * akt), j);
 				}
 				if(j%2==1){
-					elevatorButton[i][j] = new component(liftGomb.width, liftGomb.height, "lime", lift.padding + liftGomb.padding*2 + liftGomb.width + padlo.width*i,	(emeletszam-1)*level + liftGomb.padding + ((liftGomb.padding + liftGomb.height) * akt));
+					elevatorButton[i][j] = new component(liftGomb.width, liftGomb.height, "lime", lift.padding + liftGomb.padding*2 + liftGomb.width + padlo.width*i,	(emeletszam-1)*level + liftGomb.padding + ((liftGomb.padding + liftGomb.height) * akt), j);
 					akt--;
 				}	
 			}
+			door[i] = new component(lift.width, lift.height, "skyblue", lift.padding+(2*lift.padding+lift.width)*i, (emeletszam-1)*level, i);
 		}
 		
 		for(let i = 0; i<emeletszam; i++){
-			floor[i] = new component(padlo.width * liftszam, padlo.height, "green", 0, lift.height + (level*i));
+			floor[i] = new component(padlo.width * liftszam, padlo.height, "green", 0, lift.height + (level*i), "");
 			
 			if(i==0){
-				floorButton[i][0] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding - emeletGomb.height);
+				floorButton[i][0] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding - emeletGomb.height, "↓");
 			}else if(i==emeletszam-1){
-					floorButton[i][1] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding*2 - emeletGomb.height - emeletGomb.height);
+					floorButton[i][1] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding*2 - emeletGomb.height - emeletGomb.height, "↑");
 					}else{
-						floorButton[i][0] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding - emeletGomb.height);
-						floorButton[i][1] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding*2 - emeletGomb.height*2);
+						floorButton[i][0] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding - emeletGomb.height, "↓");
+						floorButton[i][1] = new component(emeletGomb.width, emeletGomb.height, "magenta", padlo.width*liftszam, lift.height + (level*i) - emeletGomb.padding*2 - emeletGomb.height*2, "↑");
 					}
 		}
 		
@@ -147,6 +150,7 @@
 				for(let j=0; j<emeletszam; j++){
 					elevatorButton[i][j].update();
 				}
+				door[i].update();
 			}
 		},
 
@@ -155,17 +159,21 @@
 		}
 	};
 
-	function component(width, height, color, x, y) {
+	function component(width, height, color, x, y, num) {
 		this.width = width;
 		this.height = height;
 		this.speedX = 0;
 		this.speedY = 0;
 		this.x = x;
-		this.y = y;    
+		this.y = y;
+		this.color = color;
 		this.update = function() {
 			ctx = liftAkna.context;
-			ctx.fillStyle = color;
+			ctx.fillStyle = this.color;
 			ctx.fillRect(this.x, this.y, this.width, this.height);
+			ctx.font = "bold 14pt arial";
+			ctx.fillStyle = "black";
+			ctx.fillText(num, this.x+(this.width/2)-5, this.y+(this.height/2)+7);
 		}
 		
 		/*this.newPos = function() {
@@ -183,6 +191,7 @@
 			for(let j=0; j<emeletszam; j++){
 				elevatorButton[i][j].update();
 			}
+			//door[i].update();
 			//elevator[i].newPos();
 		}
 		for(let i=0; i<emeletszam; i++){
@@ -224,9 +233,13 @@
 		for(let i=0; i<liftszam; i++){
 			for(let j=0; j<emeletszam; j++){
 				if (isInsideButton(mousePos, elevatorButton[i][j])) {
-					alert(i+". lift menjen a(z) "+j+". emeletre");
-                    elevators.getLift(i).goToInsideLift = j;
-                    ButtonInsideLift(i);
+					//alert(i+". lift menjen a(z) "+j+". emeletre");
+
+                    if(elevators[i].requestArray.length != 0){
+                        elevatorButton[i][j].color = "blue";
+						ButtonInsideLift(i,j);
+                    }else
+                        console.log("nem hívtad a liftet");
 				}
 			}
 		}
@@ -236,20 +249,24 @@
 			if(i==0){
 				// legfelso emelet (1 gomb)
 				if (isInsideButton(mousePos, floorButton[i][0])) {
-                    liftCall(e-i,"DOWN");
+                    floorButton[i][0].color = "pink";
+					liftCall(e-i,"DOWN");
 				}
 				//legalso emelet (1 gomb)
 			}else if(i==emeletszam-1){
 				if (isInsideButton(mousePos, floorButton[i][1])) {
-                    liftCall(e-i,"UP");
+                    floorButton[i][1].color = "pink";
+					liftCall(e-i,"UP");
 				}
 				}else{
 					//koztes emeletek le/fel gombjai
 					if (isInsideButton(mousePos, floorButton[i][0])) {
-                        liftCall(e-i,"DOWN");
+                        floorButton[i][0].color = "pink";
+						liftCall(e-i,"DOWN");
 					}
 					if (isInsideButton(mousePos, floorButton[i][1])) {
-                        liftCall(e-i,"UP");
+                        floorButton[i][1].color = "pink";
+						liftCall(e-i,"UP");
 					}
 				}
 		}
@@ -266,7 +283,6 @@
                     this.isBusy = false;
                     this.requestArray = [];
                     this.direction = 2;     //0 - DOWN, 1 - UP, 2 or else - IDLE
-                    this.goToInsideLift;
                 }
 
                 getBusy(){
@@ -316,7 +332,7 @@
                         for(let j=0; j<emeletszam; j++){
                             elevatorButton[this.ID][j].y -= level;
                         }
-                    
+						door[this.ID].y -= level;
 
                     this.currentFloor++;
                 }
@@ -327,7 +343,7 @@
                         for(let j=0; j<emeletszam; j++){
                             elevatorButton[this.ID][j].y += level;
                         }
-                    
+						door[this.ID].y += level;
 
                     this.currentFloor--;
                 }
@@ -370,8 +386,6 @@
 
         function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
             try{
-
-                console.log("hívás emelet: " + level + ", " + upOrDown);
                 generateRequest(upOrDown,level);
             }catch(globalRequests){
                 DelegateRequest();
@@ -384,10 +398,9 @@
             console.log("new request: " + newRequest.toString());
             throw globalRequests;
         }
-
+		
         async function DelegateRequest(){ 
             do{
-
                 RequestAddToLift();
                 await delay(1000);
                 Ride();
@@ -404,15 +417,26 @@
 
         function RequestAddToLift(){
             //sorba hozzáadjuk a requesteket a liftekhez, 0. req-> 0. lift, 1. req -> 1.lift
+            
+            
+            //ideigelenes teszt
+            let line = "global requestek: "
+                        
+                        for(let i = 0; i < globalRequests.length; i++){
+                            line += globalRequests[i].toString() + ", ";
+                        }
+                        console.log(line);
+            //ideigelenes teszt
+
+
+
 
             for(let i = 0; i< liftszam ; i++){
-                if(globalRequests.length > 0){  //a globálrequest ne legyen üres
-                    if(elevators[i].getBusy() == false){
-                        elevators[i].addRequest(globalRequests[0]);
-                        globalRequests.shift();
-
-                        elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
-                    }    
+                if(globalRequests.length > 0 && !elevators[i].getBusy()){  //a globálrequest ne legyen üres
+                    elevators[i].addRequest(globalRequests[0]);
+                    globalRequests.shift();
+                    elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
+                    console.log(i + ". lift = elfoglalt");
                 }
             }
         }
@@ -420,31 +444,49 @@
         function Ride(){
 
             for(let i = 0; i< liftszam ; i++){
-                if(elevators[i].requestArray.length > 0){
-                    if (elevators[i].start(elevators[i].requestArray[0].getFloor())){
-                        elevators[i].requestArray.shift();   //itt éri el a szintet, kitöröljük a requestjét
-                        //itt kéne megnyomni a gombokat
-                        
-                        //itt kéne megnyomni a gombokat
-                        elevators[i].isBusy = false;            //most már újra elérhető a lift
-                    }
-                    
+                if(elevators[i].requestArray.length != 0){
+					elevators[i].start(elevators[i].requestArray[0].getFloor());
                 }
                 
             }
 
         }
 
-        function ButtonInsideLift(i){
-            let goTo = elevators.getLift(i).goToInsideLift;
+        function ButtonInsideLift(i,goTo){
+            elevators[i].requestArray[0].pushedButtons.push(goTo);
 
-            console.log(elevators.getLift(i).ID + " megyek " + goTo);
+            console.log(i + ". lift, ide kell mennem: " + elevators[i].requestArray[0].pushedButtons[0]);
 
-            //addig nem megyünk tovább
-
-            while(elevators.getLift(i).currentFloor != goTo){
-                elevators.getLift(i).start(goTo);
+            while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){    
+                     
+                elevators[i].start(elevators[i].requestArray[0].pushedButtons[0]);
             }
+			
+			//door[i].x -= padlo.width*(i+1);
+            elevators[i].requestArray.shift(); // kitöröljük a requestet a végén
+            elevators[i].isBusy = false;
+            console.log(i + ". lift = szabad");
+
+            /*
+                try{
+                    elevators[i].requestArray[0].pushedButtons.push(goTo);
+                    throw goTo;
+                }catch(goTo){
+                    do{
+                        
+                        while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){
+                            
+                            elevators.getLift(i).start(elevators[i].requestArray[0].pushedButtons[0]);
+                        }
+                        elevators[i].requestArray[0].pushedButtons.shift();
+                        console.log(i + ". lift odaért: " + goTo);
+
+                    }while(elevators[i].requestArray[0].pushedButtons != 0);
+                    elevators[i].requestArray.shift();
+                }
+            */
+            
+
         }
 
 
