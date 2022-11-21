@@ -249,23 +249,23 @@
                         // legfelso emelet (1 gomb)
                         if (isInsideButton(mousePos, floorButton[i][0])) {
                             floorButton[i][0].color = "pink";
-                            liftCall(e-i,"DOWN");
+                            liftCall(e-i,0);    //Direction DOWN
                         }
                         //legalso emelet (1 gomb)
                     }else if(i==emeletszam-1){
                         if (isInsideButton(mousePos, floorButton[i][1])) {
                             floorButton[i][1].color = "pink";
-                            liftCall(e-i,"UP");
+                            liftCall(e-i,1);    //Direction UP
                         }
                         }else{
                             //koztes emeletek le/fel gombjai
                             if (isInsideButton(mousePos, floorButton[i][0])) {
                                 floorButton[i][0].color = "pink";
-                                liftCall(e-i,"DOWN");
+                                liftCall(e-i,0);    //Direction DOWN
                             }
                             if (isInsideButton(mousePos, floorButton[i][1])) {
                                 floorButton[i][1].color = "pink";
-                                liftCall(e-i,"UP");
+                                liftCall(e-i,1);    //Direction UP
                             }
                         }
                 }
@@ -367,6 +367,15 @@
                             return this.direction;
                         }
 
+                        toStringDirection(){
+                            if(this.direction == 0)
+                                return "DOWN";
+                            else if(this.direction == 1)
+                                return "UP";
+                            else
+                                return "IDLE";
+                        }
+
                         getFloor(){
                             
                             return this.initialFloor;
@@ -374,7 +383,7 @@
 
                         toString(){
                             
-                            return ( "(" + this.initialFloor + ", " + this.direction + ")" ); 
+                            return ( "(" + this.initialFloor + ", " + this.toStringDirection() + ")" ); 
                             //még a pushedButtonst is add hozzá for ciklussal köszi ;)
 
                         }
@@ -415,6 +424,38 @@
                                 console.log(line);
                     //ideigelenes teszt
 
+
+                    console.log("elevators[0] direction: " + elevators[0].direction);
+                    console.log( "global[0] direction: " + globalRequests[0].toString());    //ez mért nem megy?
+
+                    //GYŰJTŐ ALGORITMUS
+                    for(let i = 0; i< liftszam ; i++)
+                    {
+                        if(globalRequests.length > 0)   //a globálrequest ne legyen üres
+                        {  
+                            if(elevators[i].direction == globalRequests[0].direction)
+                            {
+                                console.log("be kéne gyűjtenem ezt");
+
+                                //begyűjtöm
+                            }
+                            else if(!elevators[i].getBusy())  //ha a lift szabad
+                            { 
+                                elevators[i].addRequest(globalRequests[0]);
+                                globalRequests.shift();
+                                elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
+                                console.log(i + ". lift = elfoglalt");
+                            }
+                            else if(elevators[i].getBusy() == true)  //ha a lift elfoglalt
+                            {
+                                //nem tudom  
+                            }
+                        }
+                    }
+
+
+                    //IDEIGLENES TESZT ALGORITMUS SORBAN KIOSZTÓS
+                    /*
                     for(let i = 0; i< liftszam ; i++){
                         if(globalRequests.length > 0 && !elevators[i].getBusy()){  //a globálrequest ne legyen üres
                             elevators[i].addRequest(globalRequests[0]);
@@ -423,6 +464,7 @@
                             console.log(i + ". lift = elfoglalt");
                         }
                     }
+                    */
                 }
 
                 function Ride(){
