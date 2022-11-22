@@ -414,9 +414,7 @@
                 }
 
                 function RequestAddToLift(){
-                    //sorba hozzáadjuk a requesteket a liftekhez, 0. req-> 0. lift, 1. req -> 1.lift
-                     
-                    //ideigelenes teszt
+                    //ideigelenes teszt Kiiratás
                     let line = "global requestek: ";          
                                 for(let i = 0; i < globalRequests.length; i++){
                                     line += globalRequests[i].toString() + ", ";
@@ -424,47 +422,52 @@
                                 console.log(line);
                     //ideigelenes teszt
 
+                    // A MOD KAPCSOLÓVAL LEHET SZABÁLYOZNI HOGY
+                    // MILYEN ALGORITMUS ALAPJÁN MŰKÖDJÖN A LIFT
+                    // "TEST"   -   sorban kiosztós algoritmus
+                    // "GYUJTO" -   Gyűjtő algoritmus
+                    let mod = "TEST";
 
-                    console.log("elevators[0] direction: " + elevators[0].direction);
-                    console.log( "global[0] direction: " + globalRequests[0].toString());    //ez mért nem megy?
-
-                    //GYŰJTŐ ALGORITMUS
-                    for(let i = 0; i< liftszam ; i++)
-                    {
-                        if(globalRequests.length > 0)   //a globálrequest ne legyen üres
-                        {  
-                            if(elevators[i].direction == globalRequests[0].direction)
-                            {
-                                console.log("be kéne gyűjtenem ezt");
-
-                                //begyűjtöm
-                            }
-                            else if(!elevators[i].getBusy())  //ha a lift szabad
-                            { 
+                    if(mod == "TEST"){
+                    //TEST ALGORITMUS
+                        for(let i = 0; i< liftszam ; i++){
+                            if(globalRequests.length > 0 && !elevators[i].getBusy()){  //a globálrequest ne legyen üres
                                 elevators[i].addRequest(globalRequests[0]);
                                 globalRequests.shift();
                                 elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
                                 console.log(i + ". lift = elfoglalt");
                             }
-                            else if(elevators[i].getBusy() == true)  //ha a lift elfoglalt
-                            {
-                                //nem tudom  
+                        }
+                    }   
+                    else if(mod == "GYUJTO"){
+                    //GYUJTO ALGORITMUS
+                        for(let i = 0; i< liftszam ; i++)
+                        {
+                            if(globalRequests.length > 0)   //a globálrequest ne legyen üres
+                            {  
+                                if(elevators[i].direction == globalRequests[i].direction)
+                                {
+                                    console.log("be kéne gyűjtenem ezt");
+
+                                    //begyűjtöm
+                                }
+                                else if(!elevators[i].getBusy())  //ha a lift szabad
+                                { 
+                                    elevators[i].addRequest(globalRequests[0]);
+                                    globalRequests.shift();
+                                    elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
+                                    console.log(i + ". lift = elfoglalt");
+                                }
+                                else if(elevators[i].getBusy() == true)  //ha a lift elfoglalt
+                                {
+                                    //nem tudom  
+                                }
                             }
                         }
                     }
 
-
-                    //IDEIGLENES TESZT ALGORITMUS SORBAN KIOSZTÓS
-                    /*
-                    for(let i = 0; i< liftszam ; i++){
-                        if(globalRequests.length > 0 && !elevators[i].getBusy()){  //a globálrequest ne legyen üres
-                            elevators[i].addRequest(globalRequests[0]);
-                            globalRequests.shift();
-                            elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
-                            console.log(i + ". lift = elfoglalt");
-                        }
-                    }
-                    */
+                    //console.log("elevators[0] direction: " + elevators[0].direction);
+                    //console.log( "global[0] direction: " + globalRequests[0].toString());    //ez mért nem megy?
                 }
 
                 function Ride(){
