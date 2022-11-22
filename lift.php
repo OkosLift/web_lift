@@ -278,13 +278,8 @@
                         constructor(id){
                             this.ID = id;
                             this.currentFloor = 0;
-                            this.isBusy = false;
                             this.requestArray = [];
                             this.direction = 2;     //0 - DOWN, 1 - UP, 2 or else - IDLE
-                        }
-
-                        getBusy(){
-                            return this.isBusy;
                         }
 
                         getCurrentFloor(){
@@ -445,23 +440,25 @@
                                         {
                                             if(elevators[i].requestArray[0].initialFloor > globalRequests[0].initialFloor)   
                                             {
-                                                AddFirstRequestToLift(i);
+                                                AddRequestToLift(i);
                                             }
                                         }
                                         if(elevators[i].direction == 0)    //DOWN
                                         {
                                             if(elevators[i].requestArray[0].initialFloor < globalRequests[0].initialFloor)
                                             {
-                                                AddFirstRequestToLift(i);
+                                                AddRequestToLift(i);
                                             }
                                         }
+                                    }else   //ha külömbözik a direction akkor a távolságmérést kell szemügyre venni
+                                    {
+
                                     }
-                                }
-                                    else if(!elevators[i].getBusy())  //ha a lift szabad
+                                }else  //ha a lift szabad
                                 { 
 
                                     console.log("szabad a lift, kiosztok neki feladatot");
-                                    AddFirstRequestToLift(i);
+                                    AddRequestToLift(i);
                                 }
                             }
                         }
@@ -511,12 +508,18 @@
                     
             //kis functionok
 
-            function AddFirstRequestToLift(i){
+            function AddRequestToLift(i){
                 elevators[i].addRequest(globalRequests[0]);
                 globalRequests.shift();
-                elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
-                console.log(i + ". lift = elfoglalt");
                 elevators[i].setDirection();
+
+                //request rendezés lift direction alapján
+                if(elevators[i].direction == 1) //ha UP fele megy
+                    elevators[i].requestArray.sort((r1, r2) => (r1.initialFloor < r2.initialFloor) ? -1 : (r1.initialFloor > r2.initialFloor) ? 1 : 0);
+                else if(elevators[i].direction == 0) //ha DOWN fele megy
+                    elevators[i].requestArray.sort((r1, r2) => (r1.initialFloor < r2.initialFloor) ? 1 : (r1.initialFloor > r2.initialFloor) ? -1 : 0);
+
+
                 elevators[i].printRequests();
             }
 
