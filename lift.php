@@ -508,41 +508,41 @@
                     
             //kis functionok
 
-            function AddRequestToLift(i){
-                elevators[i].addRequest(globalRequests[0]);
-                globalRequests.shift();
-                elevators[i].setDirection();
+                function AddRequestToLift(i){
+                    elevators[i].addRequest(globalRequests[0]);
+                    globalRequests.shift();
+                    elevators[i].setDirection();
 
-                //request rendezés lift direction alapján
-                if(elevators[i].direction == 1) //ha UP fele megy
-                    elevators[i].requestArray.sort((r1, r2) => (r1.initialFloor < r2.initialFloor) ? -1 : (r1.initialFloor > r2.initialFloor) ? 1 : 0);
-                else if(elevators[i].direction == 0) //ha DOWN fele megy
-                    elevators[i].requestArray.sort((r1, r2) => (r1.initialFloor < r2.initialFloor) ? 1 : (r1.initialFloor > r2.initialFloor) ? -1 : 0);
+                    //request rendezés lift direction alapján
+                    if(elevators[i].direction == 1) //ha UP fele megy
+                        elevators[i].requestArray.sort((r1, r2) => (r1.initialFloor < r2.initialFloor) ? -1 : (r1.initialFloor > r2.initialFloor) ? 1 : 0);
+                    else if(elevators[i].direction == 0) //ha DOWN fele megy
+                        elevators[i].requestArray.sort((r1, r2) => (r1.initialFloor < r2.initialFloor) ? 1 : (r1.initialFloor > r2.initialFloor) ? -1 : 0);
 
 
-                elevators[i].printRequests();
-            }
-
-            function getPushedButtonsLength(lift_id){
-                if(!elevators[lift_id].requestArray.length)
-                    return elevators[lift_id].requestArray[0].pushedButtons.length;
-                else 
-                    return 0;
-            }
-
-            function getAllRequestFromElevators(){
-                let result = 0;
-                for(let i = 0; i< elevators.length; i++){
-                    result += elevators[i].requestArray.length;
+                    elevators[i].printRequests();
                 }
-                return result;
-            }
 
-            function delay(milliseconds){
-                return new Promise(resolve => {
-                    setTimeout(resolve, milliseconds);
-                });
-            }
+                function getPushedButtonsLength(lift_id){
+                    if(!elevators[lift_id].requestArray.length)
+                        return elevators[lift_id].requestArray[0].pushedButtons.length;
+                    else 
+                        return 0;
+                }
+
+                function getAllRequestFromElevators(){
+                    let result = 0;
+                    for(let i = 0; i< elevators.length; i++){
+                        result += elevators[i].requestArray.length;
+                    }
+                    return result;
+                }
+
+                function delay(milliseconds){
+                    return new Promise(resolve => {
+                        setTimeout(resolve, milliseconds);
+                    });
+                }
 
             //main
                 var globalRequests = [];
