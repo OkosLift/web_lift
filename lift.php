@@ -236,6 +236,7 @@
 
                             if(elevators[i].requestArray.length != 0){
                                 elevatorButton[i][j].color = "blue";
+                                isButtonPushed_global = true;
                                 ButtonInsideLift(i,j);
                             }else
                                 console.log("nem hívtad a liftet");
@@ -376,6 +377,7 @@
 
             //Algoritmus
                 function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
+                    isButtonPushed_global = false;
                     try{
                         generateRequest(upOrDown,level);
                     }catch(globalRequests){
@@ -394,7 +396,8 @@
                         CalculateRequestWhereToAdd();
                         await delay(1000);
                         Ride();     //request algoritmus teszteléshez kommenteld ki
-                    }while(getAllRequestFromElevators() > 0);
+                    }while(!isButtonPushed_global);
+                    //while(getAllRequestFromElevators() > 0);
                 }
 
                 function CalculateRequestWhereToAdd(){
@@ -409,8 +412,9 @@
 
                     // A MOD KAPCSOLÓVAL LEHET SZABÁLYOZNI HOGY
                     // MILYEN ALGORITMUS ALAPJÁN MŰKÖDJÖN A LIFT
-                    // "TEST"   -   sorban kiosztós algoritmus
-                    // "GYUJTO" -   Gyűjtő algoritmus
+                    // "TEST"       -   Sorban kiosztós algoritmus
+                    // "GYUJTO"     -   Gyűjtő algoritmus
+                    // "PONTOZO"    -   Pontozó algoritmus
                     let mod = "GYUJTO";
 
                     if(mod == "TEST"){
@@ -463,6 +467,10 @@
                             }
                         }
                     }
+                    else if(mod == "PONTOZO"){
+                        //EZ EGY OLYAN MÓD LENNE AHOL PONTOKAT SZÁMÍT KI,
+                        //AKINEK TÖBB PONTJA VAN AZ KAPJA A REQUESTET
+                    }
 
                     //console.log("elevators[0] direction: " + elevators[0].direction);
                     //console.log( "global[0] direction: " + globalRequests[0].toString());    //ez mért nem megy?
@@ -485,12 +493,12 @@
                         elevators[i].requestArray[0].pushedButtons.push(goTo);
                         throw goTo;
                     }catch(goTo){
-                        await delay(2000); 
+                        //await delay(2000); 
                         //azért várunk hogyha több ember szált be akkor megtudja nyomni a gombokat
 
                         //az első gombnyomáshoz megy oda addig amig oda nem ér
                         while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){    
-                                
+                            await delay(1000);
                             elevators[i].start(elevators[i].requestArray[0].pushedButtons[0]);
                         }
                         //ha odaért kitörli az első gombnyomást
@@ -545,6 +553,7 @@
                 }
 
             //main
+                var isButtonPushed_global = false;  //delegateRequest while-ért felel, gombnyomással változik az értéke, azért hogy megállítsuk a ciklust
                 var globalRequests = [];
                 var elevators = [];
 
