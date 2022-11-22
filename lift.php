@@ -293,24 +293,13 @@
 
                         addRequest(request){
                             this.requestArray.push(request);
-
-                            //print
-                            let println = this.ID + ". Lift requests: "
-                            for(let i = 0; i < this.requestArray.length; i++){
-                                println += this.requestArray[i].toString();
-                            }
-                            console.log(println);
                         }
 
-                        setDirection(){ //ezt itt még át kell gondolni
-
-                            if(this.requestArray.NextFloor() != this.currentFloor){
-                                this.direction = this.requestArray.NextDirection(); //legyen UP or DOWN
-                            } 
-                            else{  
-                                this.direction = 2; //IDLE
-                                //this.requestArray.PopFront();
-                            }
+                        setDirection(){
+                            if(this.requestArray[0].initialFloor > this.currentFloor)
+                                this.direction = 1;         //UP
+                            else if(this.requestArray[0].initialFloor < this.currentFloor)
+                                this.direction = 0;         //DOWN
                         }
 
                         start(goTo){
@@ -347,9 +336,10 @@
                         }
 
                         printRequests(){
-                            for(let i = 0; i < this.requestArray.Size(); i++){
-                                this.requestArray.print();
-                            }
+                            let print = this.ID + ". lift requests: ";
+                            print += this.requestArray.toString() + ", ";
+                            
+                            console.log(print);
                         }
 
                     };
@@ -401,19 +391,18 @@
                 function generateRequest(upOrDown, requestFloorCalled){
                     let newRequest = new Request(requestFloorCalled, upOrDown);
                     globalRequests.push(newRequest);
-                    console.log("new request: " + newRequest.toString());
                     throw globalRequests;
                 }
                 
                 async function DelegateRequest(){ 
                     do{
-                        RequestAddToLift();
+                        CalculateRequestWhereToAdd();
                         await delay(1000);
-                        Ride();
+                        Ride();     //request algoritmus teszteléshez kommenteld ki
                     }while(getAllRequestFromElevators() > 0);
                 }
 
-                function RequestAddToLift(){
+                function CalculateRequestWhereToAdd(){
                     //ideigelenes teszt Kiiratás
                     let line = "global requestek: ";          
                                 for(let i = 0; i < globalRequests.length; i++){
@@ -422,11 +411,12 @@
                                 console.log(line);
                     //ideigelenes teszt
 
+
                     // A MOD KAPCSOLÓVAL LEHET SZABÁLYOZNI HOGY
                     // MILYEN ALGORITMUS ALAPJÁN MŰKÖDJÖN A LIFT
                     // "TEST"   -   sorban kiosztós algoritmus
                     // "GYUJTO" -   Gyűjtő algoritmus
-                    let mod = "TEST";
+                    let mod = "GYUJTO";
 
                     if(mod == "TEST"){
                     //TEST ALGORITMUS
@@ -441,26 +431,37 @@
                     }   
                     else if(mod == "GYUJTO"){
                     //GYUJTO ALGORITMUS
+
                         for(let i = 0; i< liftszam ; i++)
                         {
                             if(globalRequests.length > 0)   //a globálrequest ne legyen üres
                             {  
-                                if(elevators[i].direction == globalRequests[i].direction)
-                                {
-                                    console.log("be kéne gyűjtenem ezt");
-
-                                    //begyűjtöm
+                                if(elevators[i].requestArray.length != 0)   //ha a lift nem szabad
+                                {  
+                                    if(elevators[i].requestArray[0].direction == globalRequests[0].direction)   
+                                    //A lift csak azonos direction-t vehet fel a liftRequestek közé
+                                    {
+                                        if(elevators[i].direction == 1)    //UP
+                                        {
+                                            if(elevators[i].requestArray[0].initialFloor > globalRequests[0].initialFloor)   
+                                            {
+                                                AddFirstRequestToLift(i);
+                                            }
+                                        }
+                                        if(elevators[i].direction == 0)    //DOWN
+                                        {
+                                            if(elevators[i].requestArray[0].initialFloor < globalRequests[0].initialFloor)
+                                            {
+                                                AddFirstRequestToLift(i);
+                                            }
+                                        }
+                                    }
                                 }
-                                else if(!elevators[i].getBusy())  //ha a lift szabad
+                                    else if(!elevators[i].getBusy())  //ha a lift szabad
                                 { 
-                                    elevators[i].addRequest(globalRequests[0]);
-                                    globalRequests.shift();
-                                    elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
-                                    console.log(i + ". lift = elfoglalt");
-                                }
-                                else if(elevators[i].getBusy() == true)  //ha a lift elfoglalt
-                                {
-                                    //nem tudom  
+
+                                    console.log("szabad a lift, kiosztok neki feladatot");
+                                    AddFirstRequestToLift(i);
                                 }
                             }
                         }
@@ -510,6 +511,15 @@
                     
             //kis functionok
 
+            function AddFirstRequestToLift(i){
+                elevators[i].addRequest(globalRequests[0]);
+                globalRequests.shift();
+                elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
+                console.log(i + ". lift = elfoglalt");
+                elevators[i].setDirection();
+                elevators[i].printRequests();
+            }
+
             function getPushedButtonsLength(lift_id){
                 if(!elevators[lift_id].requestArray.length)
                     return elevators[lift_id].requestArray[0].pushedButtons.length;
@@ -538,6 +548,7 @@
                 for(let i = 0; i< liftszam ; i++){
                     elevators.push(new Lift(i));
                 }
+
         </script>
         <div class="form">
             <form action="lift.php" method="POST"> 
