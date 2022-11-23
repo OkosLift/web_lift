@@ -381,7 +381,7 @@
                     try{
                         generateRequest(upOrDown,level);
                     }catch(globalRequests){
-                        DelegateRequest();
+                        DelegateRequest(level,upOrDown);
                     }
                 }
 
@@ -391,7 +391,7 @@
                     throw globalRequests;
                 }
                 
-                async function DelegateRequest(){ 
+                async function DelegateRequest(level,upOrDown){ 
                     do{
                         CalculateRequestWhereToAdd();
                         await delay(1000);
@@ -488,9 +488,10 @@
             //Liften belüli hívás
                 async function ButtonInsideLift(i,goTo){
                     try{
-                        console.log(goTo);
+                        console.log(goTo+" meg színezek is");
                         //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
-                        elevators[i].requestArray[0].pushedButtons.push(goTo);
+                        floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
+						elevators[i].requestArray[0].pushedButtons.push(goTo);
                         throw goTo;
                     }catch(goTo){
                         //await delay(2000); 
@@ -502,7 +503,7 @@
                             elevators[i].start(elevators[i].requestArray[0].pushedButtons[0]);
                         }
                         //ha odaért kitörli az első gombnyomást
-                        elevators[i].requestArray[0].pushedButtons.shift();
+						elevators[i].requestArray[0].pushedButtons.shift();
 
                         //ha nincs több gombnyomás a liften belül akkor kész a request
                         if(!elevators[i].requestArray[0].pushedButtons.length){
