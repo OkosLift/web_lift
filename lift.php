@@ -283,6 +283,10 @@
                             this.direction = 2;     //0 - DOWN, 1 - UP, 2 or else - IDLE
                         }
 
+                        reset(){
+                            this.direction = 2;
+                        }
+
                         getCurrentFloor(){
                             return this.currentFloor;
                         }
@@ -345,8 +349,17 @@
                         constructor(floor, dir) {
                             this.initialFloor = floor;
                             this.direction = dir;
-                            this.pushedButtons = []; // liften belüli gombnyomások
+                            this.pushedButton;      // liften belüli gombnyomások
+                            this.isFUll = false;    //true hogyha tele van a request pl.: (3,UP,5)
+                        }
 
+                        setPushedButton(but){
+                            this.pushedButton = but;
+                            this.isFull = true;
+                        }
+
+                        isRequestFull(){
+                            return isFull;
                         }
 
                         getDirection(){
@@ -414,17 +427,18 @@
                     // MILYEN ALGORITMUS ALAPJÁN MŰKÖDJÖN A LIFT
                     // "TEST"       -   Sorban kiosztós algoritmus
                     // "GYUJTO"     -   Gyűjtő algoritmus
+                    // "CSAKEGY"    -   csak egy lifthez osztja ki algoritmus
                     // "PONTOZO"    -   Pontozó algoritmus
-                    let mod = "GYUJTO";
+
+                    let mod = "CSAKEGY";
 
                     if(mod == "TEST"){
                     //TEST ALGORITMUS
                         for(let i = 0; i< liftszam ; i++){
-                            if(globalRequests.length > 0 && !elevators[i].getBusy()){  //a globálrequest ne legyen üres
+                            if(globalRequests.length > 0 && !elevators[i].requestArray.length != 0){  //a globálrequest ne legyen üres
                                 elevators[i].addRequest(globalRequests[0]);
                                 globalRequests.shift();
-                                elevators[i].isBusy = true; //ha hozzáadtuk a requestet akkor busy legyen
-                                console.log(i + ". lift = elfoglalt");
+                                elevators[i].printRequests();
                             }
                         }
                     }   
@@ -467,6 +481,11 @@
                             }
                         }
                     }
+                    else if(mod == "CSAKEGY"){
+                        if(globalRequests.length > 0)
+                            AddRequestToLift(0);
+                    }
+
                     else if(mod == "PONTOZO"){
                         //EZ EGY OLYAN MÓD LENNE AHOL PONTOKAT SZÁMÍT KI,
                         //AKINEK TÖBB PONTJA VAN AZ KAPJA A REQUESTET
@@ -488,29 +507,32 @@
             //Liften belüli hívás
                 async function ButtonInsideLift(i,goTo){
                     try{
-                        console.log(goTo+" meg színezek is");
+                        //console.log(goTo+" meg színezek is");
                         //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
                         floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
-						elevators[i].requestArray[0].pushedButtons.push(goTo);
+                        elevators[i].requestArray[0].setPushedButton(goTo);
                         throw goTo;
                     }catch(goTo){
-                        //await delay(2000); 
-                        //azért várunk hogyha több ember szált be akkor megtudja nyomni a gombokat
 
                         //az első gombnyomáshoz megy oda addig amig oda nem ér
-                        while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButtons[0]){    
+                        while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButton){    
                             await delay(1000);
-                            elevators[i].start(elevators[i].requestArray[0].pushedButtons[0]);
+                            elevators[i].start(elevators[i].requestArray[0].pushedButton);
+                            //megnézi hogy van e request a szinten?
+                            for(let j = 0; j < elevators[i].requestArray.length; j++){
+                                if(elevators[i].currentFloor == elevators[i].requestArray[j].initialFloor)
+                                {
+                                    //van request a szinten tehát meg kell állni
+                                }
+                            }
                         }
-                        //ha odaért kitörli az első gombnyomást
-						elevators[i].requestArray[0].pushedButtons.shift();
 
-                        //ha nincs több gombnyomás a liften belül akkor kész a request
-                        if(!elevators[i].requestArray[0].pushedButtons.length){
-                            elevators[i].requestArray.shift();
-                            elevators[i].isBusy = false;
-                            console.log(i + ". lift = szabad");
-                        }
+                        elevators[i].requestArray.shift();
+                        elevators[i].reset();
+
+                        console.log(elevators[i].requestArray.length)
+                        
+         
                     }
 
                 }
