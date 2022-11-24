@@ -349,8 +349,16 @@
                         constructor(floor, dir) {
                             this.initialFloor = floor;
                             this.direction = dir;
-                            this.pushedButton;      // liften belüli gombnyomások
+                            this.pushedButton = -1;      // liften belüli gombnyomások
                             this.isFUll = false;    //true hogyha tele van a request pl.: (3,UP,5)
+                        }
+
+                        initFloorReached(){
+                            this.initialFloor = undefined;
+                        }
+
+                        pushedButtonReached(){
+                            this.pushedButton = undefined;
                         }
 
                         setPushedButton(but){
@@ -382,7 +390,10 @@
 
                         toString(){
                             
-                            return ( "(" + this.initialFloor + ", " + this.toStringDirection() + ")" ); 
+                            return ( "(" + this.initialFloor + ", " + this.toStringDirection() +
+                                       (this.pushedButton == undefined ? "" : ", " + this.pushedButton) + ")"
+
+                            ); 
                             //még a pushedButtonst is add hozzá for ciklussal köszi ;)
 
                         }
@@ -510,27 +521,69 @@
                         //console.log(goTo+" meg színezek is");
                         //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
                         floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
+                        
                         elevators[i].requestArray[0].setPushedButton(goTo);
                         throw goTo;
                     }catch(goTo){
 
-                        //az első gombnyomáshoz megy oda addig amig oda nem ér
-                        while(elevators[i].currentFloor != elevators[i].requestArray[0].pushedButton){    
-                            await delay(1000);
-                            elevators[i].start(elevators[i].requestArray[0].pushedButton);
-                            //megnézi hogy van e request a szinten?
-                            for(let j = 0; j < elevators[i].requestArray.length; j++){
-                                if(elevators[i].currentFloor == elevators[i].requestArray[j].initialFloor)
-                                {
-                                    //van request a szinten tehát meg kell állni
-                                }
+                        console.log("uj hivas: " + goTo);
+
+                        //itt megnézzük hogy a szintet vagy a hívás szintjén van e a lift, ha ott van akkor az kész
+                        for(let j = 0; j< elevators[i].requestArray.length; j++){
+                            if(elevators[i].requestArray[j].initialFloor == elevators[i].currentFloor)
+                                elevators[i].requestArray[j].initFloorReached();
+                            if(elevators[i].requestArray[j].pushedButton == elevators[i].currentFloor){
+                                elevators[i].requestArray[j].pushedButtonReached();
                             }
                         }
 
-                        elevators[i].requestArray.shift();
-                        elevators[i].reset();
+                        //csak azokat rakjuk bele a megállók tömbbe amik relevánsak
+                        let stops = [];
+                        for(let j = 0; j< elevators[i].requestArray.length; j++){
+                            if(elevators[i].requestArray[j].initialFloor != undefined)
+                                stops.push(elevators[i].requestArray[j].initialFloor);
+                            if((elevators[i].requestArray[j].pushedButton != undefined) && (elevators[i].requestArray[j].pushedButton != -1))
+                                stops.push(elevators[i].requestArray[j].pushedButton);
+                        }
 
-                        console.log(elevators[i].requestArray.length)
+                        stops.sort();
+                        console.log(stops);
+
+                        //az első gombnyomáshoz megy oda addig amig oda nem ér
+                        //itt nem a pushedbutton felé megyünk hanem oda ahol következőkeppen meg kell állni
+
+                        let nextDest = stops[0];
+
+                        console.log("kövi megálló: " + nextDest);
+
+                        while(elevators[i].currentFloor != nextDest){    
+                            await delay(1000);
+                            elevators[i].start(nextDest);
+                        }
+
+
+                        for(let j = 0; j< elevators[i].requestArray.length; j++){
+                            if(elevators[i].requestArray[j].initialFloor == nextDest)
+                                elevators[i].requestArray[j].initFloorReached();
+                            if(elevators[i].requestArray[j].pushedButton == nextDest)
+                                elevators[i].requestArray[j].pushedButtonReached();
+
+                            if(elevators[i].requestArray[j].initialFloor == elevators[i].requestArray[j].pushedButton){
+                                //itt ha mindkettő egyenlő akkor arra számítok hogy mindkettő undefined ezért kitörölhető
+                                console.log("törlés: " + elevators[i].requestArray[j].toString());
+                                elevators[i].requestArray.splice(j, 1); //j index után 1-et töröl
+                            }
+                        }
+                        
+                        stops.shift();
+
+                        console.log("requestarray: " + elevators[i].requestArray.length);
+                        console.log(elevators[i].requestArray);
+
+                        //elevators[i].requestArray.shift();
+                        //elevators[i].reset();
+
+                        //console.log(elevators[i].requestArray.length)
                         
          
                     }
