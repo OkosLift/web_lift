@@ -234,7 +234,7 @@
                         if (isInsideButton(mousePos, elevatorButton[i][j])) {
                             //alert(i+". lift menjen a(z) "+j+". emeletre");
 
-                            if(elevators[i].requestArray.length != 0){
+                            if(elevators[i].requestArray.length != 0 || elevators[i].plan.length != 0){ //ideiglenes
                                 elevatorButton[i][j].color = "blue";
                                 isButtonPushed_global = true;
                                 ButtonInsideLift(i,j);
@@ -281,6 +281,8 @@
                             this.currentFloor = 0;
                             this.requestArray = [];
                             this.direction = 2;     //0 - DOWN, 1 - UP, 2 or else - IDLE
+
+                            this.plan = [];
                         }
 
                         reset(){
@@ -349,21 +351,10 @@
                         constructor(floor, dir) {
                             this.initialFloor = floor;
                             this.direction = dir;
-                            this.pushedButton = -1;      // liften belüli gombnyomások
-                            this.isFUll = false;    //true hogyha tele van a request pl.: (3,UP,5)
                         }
 
                         initFloorReached(){
                             this.initialFloor = undefined;
-                        }
-
-                        pushedButtonReached(){
-                            this.pushedButton = undefined;
-                        }
-
-                        setPushedButton(but){
-                            this.pushedButton = but;
-                            this.isFull = true;
                         }
 
                         isRequestFull(){
@@ -520,77 +511,57 @@
                     try{
                         //console.log(goTo+" meg színezek is");
                         //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
-                        floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
+                        //floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
                         
-                        elevators[i].requestArray[0].setPushedButton(goTo);
+                        elevators[i].plan.push(goTo);
+                        elevators[i].plan.push(goTo + "S");
                         throw goTo;
-                    }catch(goTo){
+                    }catch(goTo){                    
 
-                        console.log("uj hivas: " + goTo);
-
-                        //itt megnézzük hogy a szintet vagy a hívás szintjén van e a lift, ha ott van akkor az kész
-                        for(let j = 0; j< elevators[i].requestArray.length; j++){
-                            if(elevators[i].requestArray[j].initialFloor == elevators[i].currentFloor)
-                                elevators[i].requestArray[j].initFloorReached();
-                            if(elevators[i].requestArray[j].pushedButton == elevators[i].currentFloor){
-                                elevators[i].requestArray[j].pushedButtonReached();
-                            }
-                        }
-
-                        //csak azokat rakjuk bele a megállók tömbbe amik relevánsak
-                        let stops = [];
-                        for(let j = 0; j< elevators[i].requestArray.length; j++){
-                            if(elevators[i].requestArray[j].initialFloor != undefined)
-                                stops.push(elevators[i].requestArray[j].initialFloor);
-                            if((elevators[i].requestArray[j].pushedButton != undefined) && (elevators[i].requestArray[j].pushedButton != -1))
-                                stops.push(elevators[i].requestArray[j].pushedButton);
-                        }
-
-                        stops.sort();
-                        console.log(stops);
-
-                        //az első gombnyomáshoz megy oda addig amig oda nem ér
-                        //itt nem a pushedbutton felé megyünk hanem oda ahol következőkeppen meg kell állni
-
-                        let nextDest = stops[0];
-
-                        console.log("kövi megálló: " + nextDest);
-
-                        while(elevators[i].currentFloor != nextDest){    
-                            await delay(1000);
-                            elevators[i].start(nextDest);
-                        }
-
-
-                        for(let j = 0; j< elevators[i].requestArray.length; j++){
-                            if(elevators[i].requestArray[j].initialFloor == nextDest)
-                                elevators[i].requestArray[j].initFloorReached();
-                            if(elevators[i].requestArray[j].pushedButton == nextDest)
-                                elevators[i].requestArray[j].pushedButtonReached();
-
-                            if(elevators[i].requestArray[j].initialFloor == elevators[i].requestArray[j].pushedButton){
-                                //itt ha mindkettő egyenlő akkor arra számítok hogy mindkettő undefined ezért kitörölhető
-                                console.log("törlés: " + elevators[i].requestArray[j].toString());
-                                elevators[i].requestArray.splice(j, 1); //j index után 1-et töröl
-                            }
+                        elevators[i].requestArray.shift();
+                        
+                        while(elevators[i].requestArray.length > 0)
+                        {    
+                            elevators[i].plan.push( elevators[i].requestArray[0].initialFloor );
+                            elevators[i].requestArray.shift();
                         }
                         
-                        stops.shift();
+                        elevators[i].plan.sort();   //sorba rendezés
+                
+                            while(elevators[i].plan.length > 0){
 
-                        console.log("requestarray: " + elevators[i].requestArray.length);
-                        console.log(elevators[i].requestArray);
+                                let nextDest = elevators[i].plan[0];
 
-                        //elevators[i].requestArray.shift();
-                        //elevators[i].reset();
+                                if(elevators[i].plan[0][elevators[i].plan[0].length-1] == "S"){
+                                    console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
+                                    await delay(3000);
+                                }
+                                else{
+                                    while(elevators[i].currentFloor != nextDest){    
+                                        await delay(500);   //lift sebessége
+                                        elevators[i].start(nextDest);
+                                    }
+                                    if(elevators[i].plan.length > 2)
+                                        await delay(3000);
+                                }
 
-                        //console.log(elevators[i].requestArray.length)
-                        
-         
+                                elevators[i].plan.shift();
+                                
+                            }
+
+
                     }
 
                 }
                     
             //kis functionok
+
+                function removeLastChar(string){
+                    let result = "";
+                    for(let i = 0; i < string.length-1; i++)
+                        result += string[i];
+                    return result;
+                }
 
                 function AddRequestToLift(i){
                     elevators[i].addRequest(globalRequests[0]);
