@@ -581,19 +581,20 @@
 
                             let nextDest = elevators[i].plan[0];
 
-                            if(elevators[i].plan[0][elevators[i].plan[0].length-1] == "S"){
-                                //console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
-                                await delay(3000);
-                            }
-                            else{
+                            //mivel először szám van és utanna s ezert itt ebben a sorrendben ellenőrizzük(if, else)
+                            if(elevators[i].plan[0][elevators[i].plan[0].length-1] != "S"){
                                 while(elevators[i].currentFloor != nextDest){    
                                     await delay(500);   //lift sebessége
                                     elevators[i].start(nextDest);
                                 }
                                 if(elevators[i].plan.length > 2)
-                                    await delay(3000);
+                                await delay(3000);
                             }
-
+                            else{
+                                //console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
+                                await delay(3000);
+                            }
+                            
                             elevators[i].plan.shift();
                         
                         }
