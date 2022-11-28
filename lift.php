@@ -432,7 +432,7 @@
                     // "CSAKEGY"    -   csak egy lifthez osztja ki algoritmus
                     // "PONTOZO"    -   Pontozó algoritmus
 
-                    let mod = "CSAKEGY";
+                    let mod = "PONTOZO";
 
                     if(mod == "TEST"){
                     //TEST ALGORITMUS
@@ -491,6 +491,56 @@
                     else if(mod == "PONTOZO"){
                         //EZ EGY OLYAN MÓD LENNE AHOL PONTOKAT SZÁMÍT KI,
                         //AKINEK TÖBB PONTJA VAN AZ KAPJA A REQUESTET
+                        if(globalRequests.length > 0)
+                        {
+                            let points = [];
+                            for(let i = 0; i < elevators.length; i++){
+                                points[i] = 0;
+                            }
+    
+                            for(let i = 0; i < elevators.length; i++){
+                                //lift távolsága az adott hívástól
+                                    let distance = getDistance(elevators[i].currentFloor, globalRequests[0].initialFloor);
+                                    if(distance < emeletszam * 0.2) //20 % os eltérés
+                                    {
+                                        console.log(distance + " < " + emeletszam * 0.2);
+                                        points[i] += 9;
+                                    }else if(distance < emeletszam * 0.4) //40 % os eltérés
+                                    {
+                                        console.log(distance + " < " + emeletszam * 0.4);
+                                        points[i] += 7;
+                                    }
+                                    else if(distance < emeletszam * 0.6) //60 % os eltérés
+                                    {
+                                        console.log(distance + " < " + emeletszam * 0.6);
+                                        points[i] += 5;
+                                    }
+                                    else //60% os eltérésnél nagyobb
+                                    {
+                                        console.log(distance + " < " + "nagy eltérés");
+                                        points[i] += 2;
+                                    }
+    
+                                //Ha a lift szabad
+                                    if(elevators[i].requestArray.length == 0)
+                                        points[i] += 10;
+    
+                                //Request direction Up vagy Down
+                                    if(elevators[i].requestArray.length != 0){
+                                        if(elevators[i].requestArray[0].direction == globalRequests[0].direction)
+                                            points[i] += 5;
+                                    }
+                            }
+    
+                            //console.log(points);
+    
+                            const max = Math.max(...points);
+                            const index = points.indexOf(max);
+                            //console.log(index); // 👉️ 3
+    
+                            AddRequestToLift(index);
+
+                        }
                     }
 
                     //console.log("elevators[0] direction: " + elevators[0].direction);
@@ -603,6 +653,10 @@
                 }
                     
             //kis functionok
+
+                function getDistance(liftFloor, callFloor){
+                    return Math.abs(liftFloor - callFloor);
+                }
 
                 function removeLastChar(string){
                     let result = "";
