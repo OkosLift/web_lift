@@ -409,7 +409,7 @@
                 async function DelegateRequest(level,upOrDown){ 
                     do{
                         CalculateRequestWhereToAdd();
-                        await delay(1000);
+                        await delay(500);   //lift sebessége
                         Ride();     //request algoritmus teszteléshez kommenteld ki
                     }while(!isButtonPushed_global);
                     //while(getAllRequestFromElevators() > 0);
@@ -507,49 +507,85 @@
                 }
                 
             //Liften belüli hívás
-                async function ButtonInsideLift(i,goTo){
-                    try{
-                        //console.log(goTo+" meg színezek is");
-                        //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
-                        //floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
-                        
+                async function ButtonInsideLift(i,goTo)
+                {
+                    //console.log(goTo+" meg színezek is");
+                    //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
+                    //floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
+                    
+                    if(elevators[i].direction == 1) // ha felfele megy
+                    {
                         elevators[i].plan.push(goTo);
                         elevators[i].plan.push(goTo + "S");
-                        throw goTo;
-                    }catch(goTo){                    
 
                         elevators[i].requestArray.shift();
-                        
+                    
                         while(elevators[i].requestArray.length > 0)
                         {    
                             elevators[i].plan.push( elevators[i].requestArray[0].initialFloor );
                             elevators[i].requestArray.shift();
                         }
-                        
-                        elevators[i].plan.sort();   //sorba rendezés
-                
-                            while(elevators[i].plan.length > 0){
 
-                                let nextDest = elevators[i].plan[0];
+                        elevators[i].plan.sort();       //sorba rendezés növekvő
 
-                                if(elevators[i].plan[0][elevators[i].plan[0].length-1] == "S"){
-                                    console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
+                        while(elevators[i].plan.length > 0){
+
+                            let nextDest = elevators[i].plan[0];
+
+                            if(elevators[i].plan[0][elevators[i].plan[0].length-1] == "S"){
+                                console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
+                                await delay(3000);
+                            }
+                            else{
+                                while(elevators[i].currentFloor != nextDest){    
+                                    await delay(500);   //lift sebessége
+                                    elevators[i].start(nextDest);
+                                }
+                                if(elevators[i].plan.length > 2)
                                     await delay(3000);
-                                }
-                                else{
-                                    while(elevators[i].currentFloor != nextDest){    
-                                        await delay(500);   //lift sebessége
-                                        elevators[i].start(nextDest);
-                                    }
-                                    if(elevators[i].plan.length > 2)
-                                        await delay(3000);
-                                }
-
-                                elevators[i].plan.shift();
-                                
                             }
 
+                            elevators[i].plan.shift();
+                            
+                        }
 
+                    }else
+                    {
+                        //ha a lift lefelé megy
+                        elevators[i].plan.push(goTo);
+                        elevators[i].plan.push(goTo + "S");
+
+                        elevators[i].requestArray.shift();
+                    
+                        while(elevators[i].requestArray.length > 0)
+                        {    
+                            elevators[i].plan.push( elevators[i].requestArray[0].initialFloor );
+                            elevators[i].requestArray.shift();
+                        }
+
+                        elevators[i].plan.sort();
+                        elevators[i].plan.reverse();    //sorba rendezés csökkenő
+
+                        while(elevators[i].plan.length > 0){
+
+                            let nextDest = elevators[i].plan[0];
+
+                            if(elevators[i].plan[0][elevators[i].plan[0].length-1] == "S"){
+                                console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
+                                await delay(3000);
+                            }
+                            else{
+                                while(elevators[i].currentFloor != nextDest){    
+                                    await delay(500);   //lift sebessége
+                                    elevators[i].start(nextDest);
+                                }
+                                if(elevators[i].plan.length > 2)
+                                    await delay(3000);
+                            }
+
+                        elevators[i].plan.shift();
+                        
+                        }
                     }
 
                 }
