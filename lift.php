@@ -341,7 +341,7 @@
                             let print = this.ID + ". lift requests: ";
                             print += this.requestArray.toString() + ", ";
                             
-                            console.log(print);
+                            //console.log(print);
                         }
 
                     };
@@ -421,7 +421,7 @@
                                 for(let i = 0; i < globalRequests.length; i++){
                                     line += globalRequests[i].toString() + ", ";
                                 }
-                                console.log(line);
+                                //console.log(line);
                     //ideigelenes teszt
 
 
@@ -477,7 +477,7 @@
                                 }else  //ha a lift szabad
                                 { 
 
-                                    console.log("szabad a lift, kiosztok neki feladatot");
+                                    //console.log("szabad a lift, kiosztok neki feladatot");
                                     AddRequestToLift(i);
                                 }
                             }
@@ -513,6 +513,8 @@
                     //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
                     //floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
                     
+
+
                     if(elevators[i].direction == 1) // ha felfele megy
                     {
                         elevators[i].plan.push(goTo);
@@ -528,12 +530,17 @@
 
                         elevators[i].plan.sort();       //sorba rendezés növekvő
 
+                        
+
                         while(elevators[i].plan.length > 0){
+
+                            console.log(elevators[i].plan);
+
 
                             let nextDest = elevators[i].plan[0];
 
                             if(elevators[i].plan[0][elevators[i].plan[0].length-1] == "S"){
-                                console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
+                                //console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
                                 await delay(3000);
                             }
                             else{
@@ -552,8 +559,8 @@
                     }else
                     {
                         //ha a lift lefelé megy
-                        elevators[i].plan.push(goTo);
                         elevators[i].plan.push(goTo + "S");
+                        elevators[i].plan.push(goTo);
 
                         elevators[i].requestArray.shift();
                     
@@ -563,15 +570,19 @@
                             elevators[i].requestArray.shift();
                         }
 
-                        elevators[i].plan.sort();
-                        elevators[i].plan.reverse();    //sorba rendezés csökkenő
+                        elevators[i].plan.sort();       //növekvő sorrenbe rendezzük
+                        elevators[i].plan.reverse();    //majd megfordítjuk
+                        // itt van a probléma : stop megallo, stop megallo
+                        // helyes sorrend: megallo stop, megallo stop
 
                         while(elevators[i].plan.length > 0){
+
+                            console.log(elevators[i].plan);
 
                             let nextDest = elevators[i].plan[0];
 
                             if(elevators[i].plan[0][elevators[i].plan[0].length-1] == "S"){
-                                console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
+                                //console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
                                 await delay(3000);
                             }
                             else{
@@ -583,7 +594,7 @@
                                     await delay(3000);
                             }
 
-                        elevators[i].plan.shift();
+                            elevators[i].plan.shift();
                         
                         }
                     }
