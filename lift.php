@@ -237,7 +237,9 @@
                             if(elevators[i].requestArray.length != 0 || elevators[i].plan.length != 0){ //ideiglenes
                                 elevatorButton[i][j].color = "blue";
                                 isButtonPushed_global = true;
-                                ButtonInsideLift(i,j);
+								floorButton[emeletszam-1-elevators[i].requestArray[0].initialFloor][elevators[i].requestArray[0].getDirection()].color = "magenta";
+								// my time to shine *******************************************************************************************************************
+								ButtonInsideLift(i,j);
                             }else
                                 console.log("nem hívtad a liftet");
                         }
@@ -410,7 +412,9 @@
                     do{
                         CalculateRequestWhereToAdd();
                         await delay(500);   //lift sebessége
-                        Ride();     //request algoritmus teszteléshez kommenteld ki
+                        
+						Ride();     //request algoritmus teszteléshez kommenteld ki
+						//floorButton[emeletszam-1-level][upOrDown].color = "magenta";
                     }while(!isButtonPushed_global);
                     //while(getAllRequestFromElevators() > 0);
                 }
@@ -601,7 +605,8 @@
                                 if(elevators[i].plan.length > 2)
                                     await delay(3000);
                             }
-
+							
+							elevatorButton[i][goTo].color = "lime";
                             elevators[i].plan.shift();
                             
                         }
@@ -644,7 +649,8 @@
                                 //console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
                                 await delay(3000);
                             }
-                            
+							
+                            elevatorButton[i][goTo].color = "lime";
                             elevators[i].plan.shift();
                         
                         }
