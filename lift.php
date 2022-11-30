@@ -237,7 +237,7 @@
                             if(elevators[i].requestArray.length != 0 || elevators[i].plan.length != 0){ //ideiglenes
                                 elevatorButton[i][j].color = "blue";
                                 isButtonPushed_global = true;
-								floorButton[emeletszam-1-elevators[i].requestArray[0].initialFloor][elevators[i].requestArray[0].getDirection()].color = "magenta";
+								//floorButton[emeletszam-1-elevators[i].requestArray[0].initialFloor][elevators[i].requestArray[0].getDirection()].color = "magenta";
 								// my time to shine *******************************************************************************************************************
 								ButtonInsideLift(i,j);
                             }else
@@ -567,93 +567,42 @@
                     //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
                     //floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
                     
-
+                    elevators[i].plan.push(goTo);
+                    elevators[i].requestArray.shift();
+                
+                    while(elevators[i].requestArray.length > 0)
+                    {    
+                        elevators[i].plan.push( elevators[i].requestArray[0].initialFloor );
+                        elevators[i].requestArray.shift();
+                    }
 
                     if(elevators[i].direction == 1) // ha felfele megy
                     {
-                        elevators[i].plan.push(goTo);
-                        elevators[i].plan.push(goTo + "S");
-
-                        elevators[i].requestArray.shift();
-                    
-                        while(elevators[i].requestArray.length > 0)
-                        {    
-                            elevators[i].plan.push( elevators[i].requestArray[0].initialFloor );
-                            elevators[i].requestArray.shift();
-                        }
-
                         elevators[i].plan.sort();       //sorba rendezés növekvő
-
-                        
-
-                        while(elevators[i].plan.length > 0){
-
-                            console.log(elevators[i].plan);
-
-
-                            let nextDest = elevators[i].plan[0];
-
-                            if(elevators[i].plan[0][elevators[i].plan[0].length-1] == "S"){
-                                //console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
-                                await delay(3000);
-                            }
-                            else{
-                                while(elevators[i].currentFloor != nextDest){    
-                                    await delay(500);   //lift sebessége
-                                    elevators[i].start(nextDest);
-                                }
-                                if(elevators[i].plan.length > 2)
-                                    await delay(3000);
-                            }
-							
-							elevatorButton[i][goTo].color = "lime";
-                            elevators[i].plan.shift();
-                            
-                        }
-
-                    }else
+                    }else          //ha a lift lefelé megy
                     {
-                        //ha a lift lefelé megy
-                        elevators[i].plan.push(goTo + "S");
-                        elevators[i].plan.push(goTo);
-
-                        elevators[i].requestArray.shift();
-                    
-                        while(elevators[i].requestArray.length > 0)
-                        {    
-                            elevators[i].plan.push( elevators[i].requestArray[0].initialFloor );
-                            elevators[i].requestArray.shift();
-                        }
-
                         elevators[i].plan.sort();       //növekvő sorrenbe rendezzük
                         elevators[i].plan.reverse();    //majd megfordítjuk
-                        // itt van a probléma : stop megallo, stop megallo
-                        // helyes sorrend: megallo stop, megallo stop
+                    }
 
-                        while(elevators[i].plan.length > 0){
+                    while(elevators[i].plan.length > 0){
 
-                            console.log(elevators[i].plan);
+                        console.log(elevators[i].plan);
 
-                            let nextDest = elevators[i].plan[0];
 
-                            //mivel először szám van és utanna s ezert itt ebben a sorrendben ellenőrizzük(if, else)
-                            if(elevators[i].plan[0][elevators[i].plan[0].length-1] != "S"){
-                                while(elevators[i].currentFloor != nextDest){    
-                                    await delay(500);   //lift sebessége
-                                    elevators[i].start(nextDest);
-                                }
-                                if(elevators[i].plan.length > 2)
-                                await delay(3000);
-                            }
-                            else{
-                                //console.log("kiszállás: " + removeLastChar(elevators[i].plan[0]));
-                                await delay(3000);
-                            }
-							
-                            elevatorButton[i][goTo].color = "lime";
-                            elevators[i].plan.shift();
-                        
+                        let nextDest = elevators[i].plan[0];
+
+                        while(elevators[i].currentFloor != nextDest){    
+                            await delay(500);   //lift sebessége
+                            elevators[i].start(nextDest);
                         }
+                        console.log("vár");
+                        await delay(elevators[i].plan.length * 2000);
+
+
+                        elevatorButton[i][goTo].color = "lime";
+                        elevators[i].plan.shift();
+
                     }
 
                 }
