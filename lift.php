@@ -411,7 +411,7 @@
                 async function DelegateRequest(level,upOrDown){ 
                     do{
                         CalculateRequestWhereToAdd();
-                        await delay(500);   //lift sebessége
+                        await delay(liftSpeed);   //lift sebessége
                         
 						Ride();     //request algoritmus teszteléshez kommenteld ki
 						//floorButton[emeletszam-1-level][upOrDown].color = "magenta";
@@ -566,7 +566,8 @@
                     //console.log(goTo+" meg színezek is");
                     //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
                     //floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
-                    
+                
+                //összes requestet beletesszük a plan-be 
                     elevators[i].plan.push(goTo);
                     elevators[i].requestArray.shift();
                 
@@ -575,7 +576,7 @@
                         elevators[i].plan.push( elevators[i].requestArray[0].initialFloor );
                         elevators[i].requestArray.shift();
                     }
-
+                //sorba rendezés
                     if(elevators[i].direction == 1) // ha felfele megy
                     {
                         elevators[i].plan.sort();       //sorba rendezés növekvő
@@ -584,25 +585,22 @@
                         elevators[i].plan.sort();       //növekvő sorrenbe rendezzük
                         elevators[i].plan.reverse();    //majd megfordítjuk
                     }
-
+                //addíg megy a lift amíg van plan
                     while(elevators[i].plan.length > 0){
 
-                        console.log(elevators[i].plan);
-
-
+                        //console.log(elevators[i].plan);
                         let nextDest = elevators[i].plan[0];
 
                         while(elevators[i].currentFloor != nextDest){    
-                            await delay(500);   //lift sebessége
+                            await delay(liftSpeed);   //lift sebessége
                             elevators[i].start(nextDest);
                         }
-                        console.log("vár");
-                        await delay(elevators[i].plan.length * 2000);
-
-
-                        elevatorButton[i][goTo].color = "lime";
+                        
+                        elevatorButton[i][nextDest].color = "lime";     //gomb visszaszínezése
+                        await delay(elevators[i].plan.length * 2000);   //várakozási idő
+                        
                         elevators[i].plan.shift();
-
+                        
                     }
 
                 }
@@ -657,6 +655,8 @@
                 }
 
             //main
+                var liftSpeed = 1000;
+
                 var isButtonPushed_global = false;  //delegateRequest while-ért felel, gombnyomással változik az értéke, azért hogy megállítsuk a ciklust
                 var globalRequests = [];
                 var elevators = [];
