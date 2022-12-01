@@ -73,7 +73,7 @@
 
             var elevatorButton = new Array(liftszam);
             for (let i = 0; i < liftszam; i++) {
-            elevatorButton[i] = new Array(emeletszam);
+				elevatorButton[i] = new Array(emeletszam);
             }
 
             var floorButton = new Array(emeletszam);
@@ -283,6 +283,7 @@
                             this.currentFloor = 0;
                             this.requestArray = [];
                             this.direction = 2;     //0 - DOWN, 1 - UP, 2 or else - IDLE
+							this.usage = 0;
 
                             this.plan = [];
                         }
@@ -418,7 +419,7 @@
                     }while(!isButtonPushed_global);
                     //while(getAllRequestFromElevators() > 0);
                 }
-
+				
                 function CalculateRequestWhereToAdd(){
                     //ideigelenes teszt Kiiratás
                     let line = "global requestek: ";          
@@ -491,11 +492,13 @@
                         if(globalRequests.length > 0)
                             AddRequestToLift(0);
                     }
-
+					
                     else if(mod == "PONTOZO"){
                         //EZ EGY OLYAN MÓD LENNE AHOL PONTOKAT SZÁMÍT KI,
                         //AKINEK TÖBB PONTJA VAN AZ KAPJA A REQUESTET
-                        if(globalRequests.length > 0)
+                        
+						
+						/*if(globalRequests.length > 0)
                         {
                             let points = [];
                             for(let i = 0; i < elevators.length; i++){
@@ -545,7 +548,55 @@
                             AddRequestToLift(index);
 
                         }
-                    }
+						*/
+						
+						
+						// a global requestnél mindig csak egy requestet nézünk, pedig lehetne többet, vagy akár mindet is
+						
+						// elevators[i].usage : mennyiszer volt használva, több a rosszabb
+						
+						if(globalRequests.length > 0){
+							
+							let points = [];
+                            for(let i = 0; i < elevators.length; i++){
+                                points[i] = 0;
+                            }
+							
+							for(let i = 0; i<elevators.length; i++){
+								
+								//távolság a hívástól
+								points[i] += getDistance(elevators[i].currentFloor, globalRequests[0].initialFloor);
+								
+								//elhasználtság, a súlyozás nem fix
+								points[i] += elevators[i].usage * 0.1;
+								
+								if(elevators[i].requestArray.length != 0){
+									if(elevators[i].requestArray[0].direction != globalRequests[0].direction)
+										points[i] += emeletszam/2;
+								}
+								
+							}
+							
+							
+							const min = Math.min(...points);
+                            const index = points.indexOf(min);
+							
+							elevators[index].usage++;
+							
+							AddRequestToLift(index); // lift tömbbéli sorszáma
+						}
+						
+						/*CSAKEGY alapján:
+						
+						if(globalRequests.length > 0)
+                            
+							mindefélre varázslatos kódsor és algoritmus és matek és függvények és pontozás és  súlyozás
+							
+							AddRequestToLift(0);
+							
+						*/
+						
+					}
 
                     //console.log("elevators[0] direction: " + elevators[0].direction);
                     //console.log( "global[0] direction: " + globalRequests[0].toString());    //ez mért nem megy?
