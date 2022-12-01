@@ -507,21 +507,21 @@
                                     let distance = getDistance(elevators[i].currentFloor, globalRequests[0].initialFloor);
                                     if(distance < emeletszam * 0.2) //20 % os eltérés
                                     {
-                                        console.log(distance + " < " + emeletszam * 0.2);
+                                        //console.log(distance + " < " + emeletszam * 0.2);
                                         points[i] += 9;
                                     }else if(distance < emeletszam * 0.4) //40 % os eltérés
                                     {
-                                        console.log(distance + " < " + emeletszam * 0.4);
+                                        //console.log(distance + " < " + emeletszam * 0.4);
                                         points[i] += 7;
                                     }
                                     else if(distance < emeletszam * 0.6) //60 % os eltérés
                                     {
-                                        console.log(distance + " < " + emeletszam * 0.6);
+                                        //console.log(distance + " < " + emeletszam * 0.6);
                                         points[i] += 5;
                                     }
                                     else //60% os eltérésnél nagyobb
                                     {
-                                        console.log(distance + " < " + "nagy eltérés");
+                                        //console.log(distance + " < " + "nagy eltérés");
                                         points[i] += 2;
                                     }
     
@@ -567,7 +567,7 @@
                     //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
                     //floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
                 
-                //összes requestet beletesszük a plan-be 
+                //összes requestet beletesszük a plan-be
                     elevators[i].plan.push(goTo);
                     elevators[i].requestArray.shift();
                 
@@ -586,8 +586,10 @@
                         elevators[i].plan.reverse();    //majd megfordítjuk
                     }
                 //addíg megy a lift amíg van plan
-                    while(elevators[i].plan.length > 0){
+                    let maxPlanSize = elevators[i].plan.length + 2;
 
+                    while(elevators[i].plan.length > 0){
+                        console.log(elevators[i].plan);
                         //console.log(elevators[i].plan);
                         let nextDest = elevators[i].plan[0];
 
@@ -595,9 +597,12 @@
                             await delay(liftSpeed);   //lift sebessége
                             elevators[i].start(nextDest);
                         }
-                        
+
                         elevatorButton[i][nextDest].color = "lime";     //gomb visszaszínezése
-                        await delay(elevators[i].plan.length * 2000);   //várakozási idő
+
+                        elevator[i].color = "yellow";
+                        await delay((maxPlanSize - elevators[i].plan.length) * 3000);   //várakozási idő
+                        elevator[i].color = "red";
                         
                         elevators[i].plan.shift();
                         
@@ -655,7 +660,7 @@
                 }
 
             //main
-                var liftSpeed = 1000;
+                var liftSpeed = 600;
 
                 var isButtonPushed_global = false;  //delegateRequest while-ért felel, gombnyomással változik az értéke, azért hogy megállítsuk a ciklust
                 var globalRequests = [];
