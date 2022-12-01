@@ -307,15 +307,6 @@
                                     this.direction = 1;
                             }else
                                 this.direction = 2;
-                            
-                            /*
-
-                            if(this.requestArray[0].initialFloor > this.currentFloor)
-                                this.direction = 1;         //UP
-                            else if(this.requestArray[0].initialFloor < this.currentFloor)
-                                this.direction = 0;         //DOWN
-
-                            */
                         }
 
                         start(goTo){
