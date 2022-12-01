@@ -236,8 +236,8 @@
 
                             if(elevators[i].requestArray.length != 0 || elevators[i].plan.length != 0){ //ideiglenes
                                 elevatorButton[i][j].color = "blue";
+                                elevator[i].color = "red";
                                 isButtonPushed_global = true;
-								//floorButton[emeletszam-1-elevators[i].requestArray[0].initialFloor][elevators[i].requestArray[0].getDirection()].color = "magenta";
 								// my time to shine *******************************************************************************************************************
 								ButtonInsideLift(i,j);
                             }else
@@ -300,10 +300,22 @@
                         }
 
                         setDirection(){
+                            if(this.requestArray.length != 0){
+                                if(this.requestArray[0].direction == 0)
+                                    this.direction = 0;
+                                else if(this.requestArray[0].direction == 1)
+                                    this.direction = 1;
+                            }else
+                                this.direction = 2;
+                            
+                            /*
+
                             if(this.requestArray[0].initialFloor > this.currentFloor)
                                 this.direction = 1;         //UP
                             else if(this.requestArray[0].initialFloor < this.currentFloor)
                                 this.direction = 0;         //DOWN
+
+                            */
                         }
 
                         start(goTo){
@@ -555,9 +567,15 @@
                     for(let i = 0; i< liftszam ; i++){
                         if(elevators[i].requestArray.length != 0){
                             elevators[i].start(elevators[i].requestArray[0].getFloor());
+
+                            if (elevators[i].currentFloor == elevators[i].requestArray[0].initialFloor)
+                                elevator[i].color = "yellow";
                         }
+
                         
                     }
+
+                    
                 }
                 
             //Liften belüli hívás
@@ -589,6 +607,9 @@
                     let maxPlanSize = elevators[i].plan.length + 2;
 
                     while(elevators[i].plan.length > 0){
+
+                        floorButton[emeletszam-1-elevators[i].currentFloor][elevators[i].direction].color = "magenta";
+
                         console.log(elevators[i].plan);
                         //console.log(elevators[i].plan);
                         let nextDest = elevators[i].plan[0];
