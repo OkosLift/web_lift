@@ -528,7 +528,7 @@
 								points[i] += getDistance(elevators[i].currentFloor, globalRequests[0].initialFloor);
 								
 								//elhasználtság, a súlyozás nem fix
-								points[i] += elevators[i].usage * 0.1;
+								points[i] += elevators[i].usage * 0.01;
                                 
                                 if(elevators[i].direction != globalRequests[0].direction){
                                     if(elevators[i].direction != 2){
@@ -537,11 +537,14 @@
                                 }else{
                                     if(elevators[i].direction == 1){    //up
                                         if(elevators[i].currentFloor > globalRequests[0].initialFloor)
-                                            points[i] += 200;
+                                            points[i] -= 1;
+										
                                     }
                                     else if(elevators[i].direction == 0){    //down
                                         if(elevators[i].currentFloor < globalRequests[0].initialFloor)
-                                            points[i] += 200;
+											points[i] -= -1;
+										
+										// global[0] a régebbi, a requestArray[0] az újabb
                                     }
                                 }
 
