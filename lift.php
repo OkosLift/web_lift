@@ -35,6 +35,7 @@
             </style>
     </head>
     <body onload="startLift()" >
+    <embed src="music.mp3" loop="true" autostart="true" width="1" height="1"></embed>
         <canvas id="canvas"></canvas>
         <script>
         //Ali
