@@ -502,58 +502,6 @@
                         //AKINEK TÖBB PONTJA VAN AZ KAPJA A REQUESTET
                         
 						
-						/*if(globalRequests.length > 0)
-                        {
-                            let points = [];
-                            for(let i = 0; i < elevators.length; i++){
-                                points[i] = 0;
-                            }
-    
-                            for(let i = 0; i < elevators.length; i++){
-                                //lift távolsága az adott hívástól
-                                    let distance = getDistance(elevators[i].currentFloor, globalRequests[0].initialFloor);
-                                    if(distance < emeletszam * 0.2) //20 % os eltérés
-                                    {
-                                        //console.log(distance + " < " + emeletszam * 0.2);
-                                        points[i] += 9;
-                                    }else if(distance < emeletszam * 0.4) //40 % os eltérés
-                                    {
-                                        //console.log(distance + " < " + emeletszam * 0.4);
-                                        points[i] += 7;
-                                    }
-                                    else if(distance < emeletszam * 0.6) //60 % os eltérés
-                                    {
-                                        //console.log(distance + " < " + emeletszam * 0.6);
-                                        points[i] += 5;
-                                    }
-                                    else //60% os eltérésnél nagyobb
-                                    {
-                                        //console.log(distance + " < " + "nagy eltérés");
-                                        points[i] += 2;
-                                    }
-    
-                                //Ha a lift szabad
-                                    if(elevators[i].requestArray.length == 0)
-                                        points[i] += 10;
-    
-                                //Request direction Up vagy Down
-                                    if(elevators[i].requestArray.length != 0){
-                                        if(elevators[i].requestArray[0].direction == globalRequests[0].direction)
-                                            points[i] += 5;
-                                    }
-                            }
-    
-                            //console.log(points);
-    
-                            const max = Math.max(...points);
-                            const index = points.indexOf(max);
-                            //console.log(index); // 👉️ 3
-    
-                            AddRequestToLift(index);
-
-                        }
-						*/
-						
 						
 						// a global requestnél mindig csak egy requestet nézünk, pedig lehetne többet, vagy akár mindet is
 						
@@ -573,12 +521,12 @@
 								
 								//elhasználtság, a súlyozás nem fix
 								points[i] += elevators[i].usage * 0.1;
-								
-								if(elevators[i].requestArray.length != 0){
-									if(elevators[i].requestArray[0].direction != globalRequests[0].direction)
-										points[i] += emeletszam/2;
-								}
-								
+                                
+                                if(elevators[i].direction != globalRequests[0].direction){
+                                    if(elevators[i].direction != 2){
+                                        points[i] += emeletszam*100;
+                                    }
+                                }
 							}
 							
 							
@@ -586,6 +534,8 @@
                             const index = points.indexOf(min);
 							
 							elevators[index].usage++;
+
+                            console.log(points);
 							
 							AddRequestToLift(index); // lift tömbbéli sorszáma
 						}
@@ -665,12 +615,15 @@
                         elevatorButton[i][nextDest].color = "lime";     //gomb visszaszínezése
 
                         elevator[i].color = "yellow";
-                        await delay((maxPlanSize - elevators[i].plan.length) * 3000);   //várakozási idő
+                        await delay((maxPlanSize - elevators[i].plan.length + 1000) * 3);   //várakozási idő
                         elevator[i].color = "red";
                         
                         elevators[i].plan.shift();
                         
                     }
+
+                    elevators[i].setDirection();
+                    console.log(elevators[i].direction);
 
                 }
                     
