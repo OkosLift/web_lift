@@ -12,3 +12,4 @@ Otthoni használatra localhoston php szerver futtatása erősen ajánlott.
 - alapvetően csukva van az ajtó
 - alapból nem lehet megnyomni belül a gombokat
 - gombokat a liften belül csak hívás után lehet használni
+- ha a lift belsejében lévő gomb már meg van nyomva akkor MÉGEGYSZER NE nyomjuk meg!
