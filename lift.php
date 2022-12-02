@@ -637,11 +637,24 @@
                         elevatorButton[i][nextDest].color = "lime";     //gomb visszaszínezése
                         elevatorButton[i][nextDest].megnyomhato = true;
 
-                        elevator[i].color = "yellow";
-                        await delay((maxPlanSize - elevators[i].plan.length + 1000) * 3);   //várakozási idő
-                        elevator[i].color = "red";
+                        
                         
                         elevators[i].plan.shift();
+
+                        if(elevators[i].plan.length == 0){
+
+                            disableAllButtonInsideLift(i);  //disable
+
+                            elevator[i].color = "yellow";    //ez az utolsó megérkezés, FINAL DISTANCE
+                            await delay((maxPlanSize - elevators[i].plan.length + 1000) * 3);   //várakozási idő
+                            elevator[i].color = "red";
+                            
+                            enableAllButtonInsideLift(i);   //enable
+                        }else{
+                            elevator[i].color = "yellow";
+                            await delay((maxPlanSize - elevators[i].plan.length + 1000) * 3);   //várakozási idő
+                            elevator[i].color = "red";
+                        }
                         
                     }
 
@@ -691,6 +704,18 @@
                         result += elevators[i].requestArray.length;
                     }
                     return result;
+                }
+
+                function disableAllButtonInsideLift(i){
+                    for(let j = 0 ; j < emeletszam ; j++){
+                        elevatorButton[i][j].megnyomhato = false;
+                    }
+                }
+
+                function enableAllButtonInsideLift(i){
+                    for(let j = 0 ; j < emeletszam ; j++){
+                        elevatorButton[i][j].megnyomhato = true;
+                    }
                 }
 
                 function delay(milliseconds){
