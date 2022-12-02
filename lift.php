@@ -524,9 +524,22 @@
                                 
                                 if(elevators[i].direction != globalRequests[0].direction){
                                     if(elevators[i].direction != 2){
-                                        points[i] += emeletszam*100;
+                                        points[i] += 100;
+                                    }
+                                }else{
+                                    console.log("egyenlo");
+                                    console.log(elevators[i].direction);
+
+                                    if(elevators[i].direction == 1){    //up
+                                        if(elevators[i].currentFloor > globalRequests[0].initialFloor)
+                                            points[i] += 200;
+                                    }
+                                    else if(elevators[i].direction == 0){    //down
+                                        if(elevators[i].currentFloor < globalRequests[0].initialFloor)
+                                            points[i] += 200;
                                     }
                                 }
+
 							}
 							
 							
@@ -596,8 +609,9 @@
                         elevators[i].plan.sort();       //növekvő sorrenbe rendezzük
                         elevators[i].plan.reverse();    //majd megfordítjuk
                     }
+
                 //addíg megy a lift amíg van plan
-                    let maxPlanSize = elevators[i].plan.length + 2;
+                    let maxPlanSize = elevators[i].plan.length;
 
                     while(elevators[i].plan.length > 0){
 
