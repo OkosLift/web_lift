@@ -167,6 +167,7 @@
                 this.x = x;
                 this.y = y;
                 this.color = color;
+                this.megnyomhato = true;
                 this.update = function() {
                     ctx = liftAkna.context;
                     ctx.fillStyle = this.color;
@@ -232,17 +233,24 @@
                 // lifteken beluli gombok
                 for(let i=0; i<liftszam; i++){
                     for(let j=0; j<emeletszam; j++){
-                        if (isInsideButton(mousePos, elevatorButton[i][j])) {
-                            //alert(i+". lift menjen a(z) "+j+". emeletre");
 
-                            if(elevators[i].requestArray.length != 0 || elevators[i].plan.length != 0){ //ideiglenes
-                                elevatorButton[i][j].color = "blue";
-                                elevator[i].color = "red";
-                                isButtonPushed_global = true;
-								// my time to shine *******************************************************************************************************************
-								ButtonInsideLift(i,j);
-                            }else
-                                console.log("nem hívtad a liftet");
+                        if(elevatorButton[i][j].megnyomhato){
+
+                            
+                            if (isInsideButton(mousePos, elevatorButton[i][j])) {
+                                //alert(i+". lift menjen a(z) "+j+". emeletre");
+
+                                if(elevators[i].requestArray.length != 0 || elevators[i].plan.length != 0){ //ideiglenes
+                                    elevatorButton[i][j].color = "blue";
+                                    elevator[i].color = "red";
+                                    isButtonPushed_global = true;
+                                    elevatorButton[i][j].megnyomhato = false;
+                                    // my time to shine *******************************************************************************************************************
+                                    ButtonInsideLift(i,j);
+                                }else
+                                    console.log("nem hívtad a liftet");
+                            }
+
                         }
                     }
                 }
@@ -624,6 +632,7 @@
                         }
 
                         elevatorButton[i][nextDest].color = "lime";     //gomb visszaszínezése
+                        elevatorButton[i][nextDest].megnyomhato = true;
 
                         elevator[i].color = "yellow";
                         await delay((maxPlanSize - elevators[i].plan.length + 1000) * 3);   //várakozási idő
