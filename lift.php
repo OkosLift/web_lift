@@ -527,9 +527,6 @@
                                         points[i] += 100;
                                     }
                                 }else{
-                                    console.log("egyenlo");
-                                    console.log(elevators[i].direction);
-
                                     if(elevators[i].direction == 1){    //up
                                         if(elevators[i].currentFloor > globalRequests[0].initialFloor)
                                             points[i] += 200;
