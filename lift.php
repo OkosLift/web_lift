@@ -35,7 +35,7 @@
             </style>
     </head>
     <body onload="startLift()" >
-    <embed src="music.mp3" loop="true" autostart="true" width="1" height="1"></embed>
+
         <canvas id="canvas"></canvas>
         <script>
         //Ali
@@ -240,15 +240,15 @@
                             if (isInsideButton(mousePos, elevatorButton[i][j])) {
                                 //alert(i+". lift menjen a(z) "+j+". emeletre");
 
-                                if(elevators[i].requestArray.length != 0 || elevators[i].plan.length != 0){ //ideiglenes
-                                    elevatorButton[i][j].color = "blue";
-                                    elevator[i].color = "red";
-                                    isButtonPushed_global = true;
-                                    elevatorButton[i][j].megnyomhato = false;
+                                //if(elevators[i].plan.length != 0){ //ideiglenes
+                                    //elevatorButton[i][j].color = "blue";
+                                    //elevator[i].color = "red";
+                                    //isButtonPushed_global = true;
+                                    //elevatorButton[i][j].megnyomhato = false;
                                     // my time to shine *******************************************************************************************************************
                                     ButtonInsideLift(i,j);
-                                }else
-                                    console.log("nem hívtad a liftet");
+                                //}else
+                                //    console.log("nem hívtad a liftet");
                             }
 
                         }
@@ -411,7 +411,7 @@
                     try{
                         generateRequest(upOrDown,level);
                     }catch(globalRequests){
-                        DelegateRequest(level,upOrDown);
+                        DelegateRequest();
                     }
                 }
 
@@ -420,16 +420,48 @@
                     globalRequests.push(newRequest);
                     throw globalRequests;
                 }
-                
-                async function DelegateRequest(level,upOrDown){ 
-                    do{
-                        CalculateRequestWhereToAdd();
-                        await delay(liftSpeed);   //lift sebessége
+
+                function createPlan(){
+                    for (let i = 0; i < elevators.length; i++) 
+                    {
+                        if (elevators[i].requestArray.length != 0) 
+                        {
+                            for (let j = 0; j < elevators[i].requestArray.length; j++) 
+                            {
+                                elevators[i].setDirection();
+                                elevators[i].plan.push(elevators[i].requestArray[0].initialFloor);  //elevator összes requestjét belerakjuk a planbe
+                                elevators[i].requestArray.shift();  //kitöröljük a 0. elemet
+                            }
+                            sortPlan(i);    // miután megvan az összes plan utánna sorbarendezzük
+                        }
                         
-						Ride();     //request algoritmus teszteléshez kommenteld ki
-						//floorButton[emeletszam-1-level][upOrDown].color = "magenta";
-                    }while(!isButtonPushed_global);
-                    //while(getAllRequestFromElevators() > 0);
+                        
+                    }
+                }
+                
+                async function DelegateRequest(){ 
+                    if(varniKell)
+                        await delay(3000);
+                    try {
+                        do{
+                            CalculateRequestWhereToAdd();
+                            await delay(liftSpeed);   //lift sebessége
+                            createPlan();
+                            
+                            if(Ride())     //request algoritmus teszteléshez kommenteld ki
+                            {
+                                varniKell = true;
+                                console.log("throw");
+                                throw varniKell;
+                            }   
+                            else
+                                varniKell = false;
+                            
+                        }while(getAllPlanFromElevators() > 0);
+
+                    } catch (varniKell) {
+                        await delay(3000);
+                    }
                 }
 				
                 function CalculateRequestWhereToAdd(){
@@ -579,15 +611,23 @@
 
                 function Ride(){
                     for(let i = 0; i< liftszam ; i++){
-                        if(elevators[i].requestArray.length != 0){
-                            elevators[i].start(elevators[i].requestArray[0].getFloor());
+                        
+                        if(elevators[i].plan.length != 0){
+                            elevators[i].start(elevators[i].plan[0]);
 
-                            if (elevators[i].currentFloor == elevators[i].requestArray[0].initialFloor)
-                                elevator[i].color = "yellow";
+                            if (elevators[i].currentFloor == elevators[i].plan[0]){
+                                console.log(elevators[i].currentFloor + "==" + elevators[i].plan[0]);
+                                console.log("kitoroltem: " + elevators[i].plan[0]);
+                                elevators[i].plan.shift();
+                                elevators[i].setDirection();
+                                return true;
+                                
+                            }
                         }
-
+                        
                         
                     }
+                    return false;
 
                     
                 }
@@ -595,12 +635,9 @@
             //Liften belüli hívás
                 async function ButtonInsideLift(i,goTo)
                 {
-                    //console.log(goTo+" meg színezek is");
-                    //megnyomtuk a gombot utána kéne egy kicsit várni hátha még nyomunk rá egyet
-                    //floorButton[emeletszam-1-elevators[i].requestArray[0].getFloor()][elevators[i].requestArray[0].getDirection()].color = "magenta";
-                
-                //összes requestet beletesszük a plan-be
                     elevators[i].plan.push(goTo);
+                    DelegateRequest();
+/*
                     elevators[i].requestArray.shift();
                 
                     while(elevators[i].requestArray.length > 0)
@@ -660,10 +697,22 @@
 
                     elevators[i].setDirection();
                     console.log(elevators[i].direction);
-
+*/
                 }
                     
             //kis functionok
+
+                function sortPlan(i){
+                    if(elevators[i].direction == 1) // ha felfele megy
+                    {
+                        elevators[i].plan.sort();       //sorba rendezés növekvő
+                    } 
+                    else if(elevators[i].direction == 2)          //ha a lift lefelé megy
+                    {
+                        elevators[i].plan.sort();       //növekvő sorrenbe rendezzük
+                        elevators[i].plan.reverse();    //majd megfordítjuk
+                    }
+                }
 
                 function getDistance(liftFloor, callFloor){
                     return Math.abs(liftFloor - callFloor);
@@ -698,10 +747,10 @@
                         return 0;
                 }
 
-                function getAllRequestFromElevators(){
+                function getAllPlanFromElevators(){
                     let result = 0;
                     for(let i = 0; i< elevators.length; i++){
-                        result += elevators[i].requestArray.length;
+                        result += elevators[i].plan.length;
                     }
                     return result;
                 }
@@ -725,6 +774,7 @@
                 }
 
             //main
+                var varniKell = false;
                 var liftSpeed = 600;
 
                 var isButtonPushed_global = false;  //delegateRequest while-ért felel, gombnyomással változik az értéke, azért hogy megállítsuk a ciklust
