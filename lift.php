@@ -431,6 +431,7 @@
                             }
                             sortPlan(i);    // miután megvan az összes plan utánna sorbarendezzük
                         }
+                        console.log(elevators[i].plan);
                         
                         
                     }
@@ -625,7 +626,7 @@
                 async function ButtonInsideLift(i,goTo)
                 {
                     elevators[i].plan.push(goTo);
-                    DelegateRequest();
+                    //DelegateRequest();
 /*
                     elevators[i].requestArray.shift();
                 
@@ -762,6 +763,14 @@
                     });
                 }
 
+                async function start(){
+                    while(true){
+                        await delay(500);
+                        console.log("megy");
+                        DelegateRequest();
+                    }
+                }
+
             //main
                 var varniKell = false;
                 var liftSpeed = 600;
@@ -774,9 +783,9 @@
                     elevators.push(new Lift(i));
                 }
 
-                while(isButtonPushed_global){
-                    DelegateRequest();
-                }
+                start();
+
+                
 
 
 
