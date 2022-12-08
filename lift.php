@@ -407,18 +407,15 @@
 
             //Algoritmus
                 function liftCall(level,upOrDown){  //call lift Functionok ide futnak egybe
-                    isButtonPushed_global = false;
-                    try{
+                    isButtonPushed_global = true;
+
                         generateRequest(upOrDown,level);
-                    }catch(globalRequests){
-                        DelegateRequest();
-                    }
+
                 }
 
                 function generateRequest(upOrDown, requestFloorCalled){
                     let newRequest = new Request(requestFloorCalled, upOrDown);
                     globalRequests.push(newRequest);
-                    throw globalRequests;
                 }
 
                 function createPlan(){
@@ -440,9 +437,6 @@
                 }
                 
                 async function DelegateRequest(){ 
-                    if(varniKell)
-                        await delay(3000);
-                    try {
                         do{
                             CalculateRequestWhereToAdd();
                             await delay(liftSpeed);   //lift sebessége
@@ -451,17 +445,12 @@
                             if(Ride())     //request algoritmus teszteléshez kommenteld ki
                             {
                                 varniKell = true;
-                                console.log("throw");
-                                throw varniKell;
+                                await delay(3000);
                             }   
                             else
                                 varniKell = false;
                             
                         }while(getAllPlanFromElevators() > 0);
-
-                    } catch (varniKell) {
-                        await delay(3000);
-                    }
                 }
 				
                 function CalculateRequestWhereToAdd(){
@@ -784,6 +773,13 @@
                 for(let i = 0; i< liftszam ; i++){
                     elevators.push(new Lift(i));
                 }
+
+                while(isButtonPushed_global){
+                    DelegateRequest();
+                }
+
+
+
 
         </script>
         <div class="form">
